@@ -1,0 +1,3 @@
+export const OP_GET_REQUEST ='OP_GET_REQUEST'
+export const OP_GET_SUCCESS ='OP_GET_SUCCESS'
+export const OP_GET_FAIL ='OP_GET_FAIL'

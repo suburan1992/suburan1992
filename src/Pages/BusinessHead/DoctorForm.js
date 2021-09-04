@@ -322,13 +322,14 @@ function DoctorForm({ history }) {
     data.ctcmonth = ctcpermonth;
     data.additionalfeename = additionalfeename;
     data.additionalfee = additionalfee;
+    data.centers = chkitem;
 
     const postData = {
       data: data,
       opservice: table,
       ipservice: ipservice,
     };
-    console.log(data, "&&12343");
+    console.log(data, "&&12rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr343");
     setBackDropOpen(true);
     await axios
       .post("http://localhost:8090/api/onboard", postData)
@@ -504,6 +505,14 @@ function DoctorForm({ history }) {
   const deleteRow = (row) => {
     var k = window.confirm("Are you sure want to delete this record ?");
     if (k) {
+      const index = totalnetAmount.indexOf(row.netamount);
+      if (index > -1) {
+        totalnetAmount.splice(index, 1);
+      }
+      const index1 = totalpayout.indexOf(row.oppayout);
+      if (index > -1) {
+        totalpayout.splice(index, 1);
+      }
       var data = table.filter((z) => z.consultation != row.consultation);
       setTable(data);
     }

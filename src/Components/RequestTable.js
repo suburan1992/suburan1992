@@ -193,7 +193,12 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 {
                   title: "Status",
                   field: "status",
-                  lookup: { 1: "Active", 0: "Inactive" },
+                  lookup: {
+                    1: "ONBOARD CREATION",
+                    2: "ONBOARD INPROGRESS",
+                    3: "DOCUMENT UPLOAD",
+                    4: "ONBOARD COMPLETE",
+                  },
                 },
               ]}
               actions={[

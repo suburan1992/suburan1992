@@ -26,6 +26,7 @@ import "react-circular-progressbar/dist/styles.css";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
+import { centerlist } from "../../actions/centerActions";
 
 function Dashboard({ reqTableData, history }) {
   toast.configure();
@@ -505,7 +506,7 @@ function Dashboard({ reqTableData, history }) {
                 id="designationlist"
                 onChange={selectedValue}
               >
-                <option>Select Designation</option>
+                <option value="0">Select Designation</option>
                 {form.designationList &&
                   form.designationList.map((ele) => (
                     <option value={ele.name}>{ele.name}</option>

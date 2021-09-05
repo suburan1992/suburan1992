@@ -11,11 +11,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { onboardById } from "../../actions/onboardActions";
 import { useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
+import moment from "moment";
 
 function Test({ history }) {
   const location = useLocation();
   const params = useParams();
 
+  console.log(location, "abcdefg");
   const formStyle = {
     borderRadius: "5px",
     border: "1px solid black",
@@ -35,9 +37,12 @@ function Test({ history }) {
   const dispatch = useDispatch();
   const onboardId = useSelector((state) => state.onboardId);
   const { oboard } = onboardId;
-  
-  console.log(oboard, "&&&&&")
- 
+
+  console.log(
+    oboard,
+    "aooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo"
+  );
+
   var a = [
     "",
     "one ",
@@ -104,6 +109,17 @@ function Test({ history }) {
         : "";
     return str;
   }
+
+  // var dateofJoining =
+  //   oboard &&
+  //   oboard.doctorCommercial &&
+  //   oboard.doctorCommercial[0] &&
+  //   oboard.doctorCommercial[0].doj;
+
+  //   console.log( oboard &&
+  //     oboard.doctorCommercial &&
+  //     oboard.doctorCommercial[0] &&
+  //     oboard.doctorCommercial[0].doj,"dateofJoining")
   useEffect(() => {
     dispatch(onboardById(location.state.data));
   }, [dispatch]);
@@ -120,7 +136,7 @@ function Test({ history }) {
       oboard.doctorCommercial[0] &&
       oboard.doctorCommercial[0].ctcmonth
   );
-  
+
   return (
     <>
       <Sidebar />
@@ -243,6 +259,7 @@ function Test({ history }) {
                               "font-family": '"Tahoma",sans-serif',
                             }}
                           >
+                            {/* {moment(dateofJoining, "DD-MM-YYYY")} */}
                             {oboard &&
                               oboard.doctorCommercial &&
                               oboard.doctorCommercial[0] &&
@@ -250,7 +267,8 @@ function Test({ history }) {
                           </span>
                         </b>
                         {/* <b> */}
-                        {/* <sup>
+                        {/* <sup>  var date = moment('15-06-2010', 'DD-MM-YYYY')
+                                    console.log(date.format('MM-DD-YYYY'))
                             <span
                               style={{
                                 "font-size": "10.5pt",
@@ -2057,11 +2075,17 @@ function Test({ history }) {
                           }}
                         >
                           Either party may terminate this Agreement at any time
-                          by giving the <b>(0) </b>days prior written notice to
+                          by giving the <b>  {oboard &&
+                              oboard.doctorCommercial &&
+                              oboard.doctorCommercial[0] &&
+                              oboard.doctorCommercial[0].noticeperiod} </b> prior written notice to
                           other party in this respect after completion of first{" "}
                           <b>Lock-in</b>
                           year’s from the date of commencement{" "}
-                          <b>(“Lock-in period”).</b>
+                          <b> {oboard &&
+                              oboard.doctorCommercial &&
+                              oboard.doctorCommercial[0] &&
+                              oboard.doctorCommercial[0].lockinperiod}.</b>
                         </span>
                       </p>
                       <p
@@ -8409,8 +8433,10 @@ function Test({ history }) {
                                     "font-family": '"Tahoma",sans-serif',
                                   }}
                                 >
-                                  Father Name&nbsp;&nbsp; /&nbsp;&nbsp; Husband
-                                  Name
+                                 {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].fathername}
                                 </span>
                               </p>
                               <p
@@ -8484,7 +8510,7 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                   {oboard &&
+                                  {oboard &&
                                     oboard.doctorCommercial &&
                                     oboard.doctorCommercial[0] &&
                                     oboard.doctorCommercial[0].pancardno}
@@ -8547,7 +8573,6 @@ function Test({ history }) {
                                     oboard.doctorCommercial &&
                                     oboard.doctorCommercial[0] &&
                                     oboard.doctorCommercial[0].medicalcertno}
-                                  
                                 </span>
                               </p>
                             </td>
@@ -8662,7 +8687,10 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                  Address
+                                     {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].Address}
                                 </span>
                               </p>
                             </td>
@@ -8836,7 +8864,10 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                  Commencemence Date Text
+                                  {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].indemnityvalue}
                                 </span>
                               </p>
                             </td>
@@ -8892,7 +8923,10 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                  Term
+                                 {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].contractlength}
                                 </span>
                               </p>
                             </td>
@@ -8948,7 +8982,10 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                  12:00:00 AM
+                                 {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].indemnityexpiry}
                                 </span>
                               </p>
                             </td>
@@ -9004,7 +9041,11 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                  Address
+                                
+                                  {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].Address}
                                 </span>
                               </p>
                             </td>
@@ -9060,7 +9101,10 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                  Rs. Indemnity/-
+                                Rs. {oboard &&
+                                    oboard.doctorCommercial &&
+                                    oboard.doctorCommercial[0] &&
+                                    oboard.doctorCommercial[0].indemnityvalue}
                                 </span>
                               </p>
                             </td>
@@ -9144,7 +9188,7 @@ function Test({ history }) {
                                       color: "black",
                                     }}
                                   >
-                                    Bank Name 
+                                    Bank Name
                                   </span>
                                 </b>
                               </p>
@@ -9159,7 +9203,7 @@ function Test({ history }) {
                                       color: "black",
                                     }}
                                   >
-                                    Account No. &amp;{" "} 
+                                    Account No. &amp;{" "}
                                   </span>
                                 </b>
                               </p>
@@ -9174,7 +9218,7 @@ function Test({ history }) {
                                       color: "black",
                                     }}
                                   >
-                                    IFSC Code 
+                                    IFSC Code
                                   </span>
                                 </b>
                               </p>
@@ -9204,10 +9248,10 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                               {oboard &&
+                                  {oboard &&
                                     oboard.doctorCommercial &&
                                     oboard.doctorCommercial[0] &&
-                                    oboard.doctorCommercial[0].bankname}
+                                    oboard.doctorCommercial[0].BankName}
                                 </span>
                               </p>
                               <p
@@ -9222,7 +9266,7 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                                 {oboard &&
+                                  {oboard &&
                                     oboard.doctorCommercial &&
                                     oboard.doctorCommercial[0] &&
                                     oboard.doctorCommercial[0].bankaccountno}
@@ -9240,7 +9284,7 @@ function Test({ history }) {
                                     color: "black",
                                   }}
                                 >
-                               {oboard &&
+                                  {oboard &&
                                     oboard.doctorCommercial &&
                                     oboard.doctorCommercial[0] &&
                                     oboard.doctorCommercial[0].ifsccode}

@@ -329,7 +329,7 @@ function DoctorForm({ history }) {
       opservice: table,
       ipservice: ipservice,
     };
-    console.log(data, "&&12rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr343");
+    // console.log(data, "&&12rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr343");
     setBackDropOpen(true);
     await axios
       .post("http://localhost:8090/api/onboard", postData)
@@ -468,9 +468,8 @@ function DoctorForm({ history }) {
     setCalculateData(0);
   };
 
-  // console.log(totalnetAmount, "totalamount");
-
-  console.log(table, "tabledata");
+  console.log(totalnetAmount, "totalamount");
+  console.log(totalpayout, "totalpayout");
   const selectedIPValue = (index) => (e) => {
     let ipArr = [...ipservice]; // copying the old datas array
     ipArr[index] = { ...ipArr[index], [e.target.id]: e.target.value }; // replace e.target.value with whatever you want to change it to
@@ -826,6 +825,18 @@ function DoctorForm({ history }) {
                         />
                       </div>
                     </Col>
+                    <Col md={6}>
+                      <label for="address" className="onboard-label">
+                        <h6>Address</h6>
+                      </label>
+                      <textarea
+                        type="text"
+                        placeholder="Address"
+                        id="Address"
+                        className="form-control"
+                        onChange={selectedValue}
+                      />
+                    </Col>
                     {/* <Col md={6}>
                       <label for="birthday" className="onboard-label">
                         <h6>Date of Birth</h6>
@@ -1088,12 +1099,12 @@ function DoctorForm({ history }) {
                         >
                           <option>Select Notice period</option>
 
-                          <option value="15">15 days</option>
-                          <option value="30">30 days</option>
-                          <option value="45">45 days</option>
-                          <option value="60">60 days</option>
-                          <option value="75">75 days</option>
-                          <option value="90">90 days</option>
+                          <option value="15 days">15 days</option>
+                          <option value="30 days">30 days</option>
+                          <option value="45 days">45 days</option>
+                          <option value="60 days">60 days</option>
+                          <option value="75 days">75 days</option>
+                          <option value="90 days">90 days</option>
                         </select>
                       </div>
                     </Col>
@@ -1111,12 +1122,12 @@ function DoctorForm({ history }) {
                         >
                           <option>Select Notice period</option>
 
-                          <option value="15">15 days</option>
-                          <option value="30">30 days</option>
-                          <option value="45">45 days</option>
-                          <option value="60">60 days</option>
-                          <option value="75">75 days</option>
-                          <option value="90">90 days</option>
+                          <option value="15 days">15 days</option>
+                          <option value="30 days">30 days</option>
+                          <option value="45 days">45 days</option>
+                          <option value="60 days">60 days</option>
+                          <option value="75 days">75 days</option>
+                          <option value="90 days">90 days</option>
                         </select>
                       </div>
                     </Col>

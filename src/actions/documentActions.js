@@ -31,7 +31,7 @@ export const documentlist = (id) => async (dispatch,getState) => {
         dispatch({ type: DOCUMENT_LIST_REQUEST })
         // const { data } = await axios.get('http://localhost:8090/api/documents/list/')
         // http://localhost:8090/api/onboard/
-        const { data } = await axios.get('http://localhost:8090/api/documents/list/')
+        const { data } = await axios.get(`http://localhost:8090/api/documents/list/${id}`)
 
         dispatch({
             type: DOCUMENT_LIST_SUCCESS,

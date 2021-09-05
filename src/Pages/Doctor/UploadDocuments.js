@@ -28,7 +28,15 @@ function UploadDocuments({ history }) {
   const [iic, setiic] = useState();
   const [docValue, setdocValue] = useState();
   const [mcrcValue, setMcrcValue] = useState();
+  const [bankstateval, setBankstateValue] = useState();
+  const [bankval, setBankValue] = useState();
+  const [pgval, setPgValue] = useState();
+  const [photoval, setphotoValue] = useState();
+  const [iicval, setiicValue] = useState();
+
   const [filename, setFilename] = useState("");
+  const [list, setList] = useState([]);
+  const [form16val, setForm16val] = useState("");
   const [filePath, setfilePath] = useState();
   const [remark, setRemark] = useState();
   const [selectedmcrc, setSelectedmcrc] = useState();
@@ -38,6 +46,7 @@ function UploadDocuments({ history }) {
   const [ccAccountNo, setccAccountNo] = useState();
   const [ifsc, setifsc] = useState();
   const [addressProof, setAddressProof] = useState();
+
   const [payslipno, setpayslipno] = useState();
   const [mbbsCertificate, setmbbsCertificate] = useState();
   const [uploadData, setUploadData] = useState([]);
@@ -132,6 +141,7 @@ function UploadDocuments({ history }) {
   };
 
   useEffect(() => {
+    console.log(user.user.id, " user id ");
     axios
       .get("http://localhost:8090/api/onboard/" + user.user.id)
       .then((res) => {
@@ -321,7 +331,7 @@ function UploadDocuments({ history }) {
   };
   const handleAdress = (e) => {
     e.preventDefault();
-    var AddressProof = document.getElementById("adressproof").innerHTML;
+    var AddressProof = document.getElementById("AddressProofid").innerHTML;
     const formData = new FormData();
     formData.append("docFiles", address);
     formData.append("doctorId", user.user.id);
@@ -348,10 +358,10 @@ function UploadDocuments({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
+        // toast("Success");
+        // setTimeout(() => {
+        //   window.location.reload();
+        // }, 3000);
       });
   };
   const handlePayslip = (e) => {
@@ -430,6 +440,7 @@ function UploadDocuments({ history }) {
     for (var x = 0; x < pg.length; x++) {
       formData.append("docFiles", pg[x]);
     }
+    formData.append("docValue", pgval);
     formData.append("doctorId", user.user.id);
     formData.append("docTitle", PG);
     formData.append("name", filename);
@@ -462,8 +473,9 @@ function UploadDocuments({ history }) {
     var Photo = document.getElementById("photo").innerHTML;
     const formData = new FormData();
     formData.append("docTitle", Photo);
+    formData.append("docValue", photoval);
     formData.append("doctorId", user.user.id);
-    formData.append("docFiles", photo);
+    formData.append("docFile", photo);
     formData.append("name", filename);
     formData.append("url", filePath);
     setRefresh(false);
@@ -493,14 +505,20 @@ function UploadDocuments({ history }) {
   const handleForm16 = (e) => {
     e.preventDefault();
     var Form16 = document.getElementById("Form16").innerHTML;
+    console.log(
+      Form16,
+      "777777777777777777777777777777777777777777777777777777777"
+    );
     const formData = new FormData();
     for (var x = 0; x < form16.length; x++) {
       formData.append("docFiles", form16[x]);
     }
+    formData.append("docValue", form16val);
     formData.append("doctorId", user.user.id);
     formData.append("docTitle", Form16);
     formData.append("name", filename);
     formData.append("url", filePath);
+
     setRefresh(false);
     axios
       .post("http://localhost:8090/api/documents/uploadMany", formData)
@@ -526,16 +544,19 @@ function UploadDocuments({ history }) {
   };
   const handleBank = (e) => {
     e.preventDefault();
+
     var BankStatement = document.getElementById("BankStatement").innerHTML;
     const formData = new FormData();
     for (var x = 0; x < bank.length; x++) {
       formData.append("docFiles", bank[x]);
     }
     formData.append("doctorId", user.user.id);
+    formData.append("docValue", bankstateval);
     formData.append("docTitle", BankStatement);
     formData.append("name", filename);
     formData.append("url", filePath);
     setRefresh(false);
+
     axios
       .post("http://localhost:8090/api/documents/uploadMany", formData)
       .then(function (response) {
@@ -564,6 +585,7 @@ function UploadDocuments({ history }) {
     const formData = new FormData();
     formData.append("doctorId", user.user.id);
     formData.append("docTitle", IIc);
+    formData.append("docValue", iicval);
     formData.append("docFile", iic);
     formData.append("name", filename);
     formData.append("url", filePath);
@@ -607,6 +629,26 @@ function UploadDocuments({ history }) {
     }
     setStep((s) => s - 1);
   }
+
+  const handleDownload = (url, filename) => {
+    fetch("http://localhost:8090/api/documents/download/" + url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/pdf",
+      },
+    }).then((response) => {
+      response.blob().then((blob) => {
+        let url = window.URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        a.click();
+      });
+
+      //window.location.href = response.url;
+    });
+  };
+
   function clickReviewAndSubmit() {}
   ///api/onboard
   const Confirm = (e) => {
@@ -622,7 +664,7 @@ function UploadDocuments({ history }) {
       .then((res) => {
         console.log(res);
       });
-    history.push("/Doctor-Profile");
+    // history.push("/Doctor-Profile");
   };
 
   const formStyle = {
@@ -675,16 +717,20 @@ function UploadDocuments({ history }) {
       .get("http://localhost:8090/api/documents/list/" + user.user.id)
       .then((res) => res.data)
       .then((rows) => {
+        setList(rows.data);
         var k = rows.data;
         var l = [];
         k.forEach((element) => {
           l.push(element.docTitle);
         });
-
+        console.log(
+          l,
+          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        );
         setUploadData(l);
       });
   }, [refresh]);
-
+  console.log(list, "listtttttt");
   // var array = [];
   // var k =
   //   uploadData &&
@@ -712,8 +758,54 @@ function UploadDocuments({ history }) {
                                 </ul>
                             </div>
                         </div> */}
-            <Timeline step1 />
+
             <form encType="multipart/form-data">
+              <br />
+              <Card style={formStyle}>
+                <Card.Header style={headerStyle}>
+                  <h4> Uploaded Documents </h4>
+                </Card.Header>
+                <Card.Body style={bodyStyle} style={{overflowY:"auto", height:"300px"}}>
+                  <Table style={{ width: "100%" }} borderless>
+                    <thead>
+                      <tr
+                        style={{
+                          textAlign: "center",
+                          borderBottom: "1px solid rgb(200, 200, 200)",
+    
+                        }}
+                      >
+                        <th className="col-2">Document Title</th>
+                        <th className="col-2"> File</th>
+                      </tr>
+                      {/* )} */}
+                    </thead>
+                    <tbody>
+                      {list &&
+                        list.map((ele) => (
+                          <tr>
+                            <td style={{ textAlign: "center" }}>
+                              {ele.docTitle}
+                            </td>
+                            <td
+                              style={{ cursor: "pointer", textAlign: "center" }}
+                            >
+                              {" "}
+                              <i
+                                className="fas fa-file"
+                                onClick={() =>
+                                  handleDownload(ele.url, ele.docTitle)
+                                }
+                                title={"Download"}
+                                style={{ fontSize: "22px" }}
+                              />
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </Table>
+                </Card.Body>
+              </Card>
               <br />
               <Card style={formStyle}>
                 <Card.Header style={headerStyle}>
@@ -1073,8 +1165,8 @@ function UploadDocuments({ history }) {
                           <td>
                             <input
                               type="text"
-                              id="pan-num"
-                              name="pan-num"
+                              value={bankval}
+                              onChange={(e) => setBankValue(e.target.value)}
                               className="form-control"
                               placeholder="Cheque Number"
                             />
@@ -1147,7 +1239,7 @@ function UploadDocuments({ history }) {
                           }}
                         >
                           <td>6.</td>
-                          <td id="AddressProof">Address Proof</td>
+                          <td id="AddressProofid">Address Proof</td>
                           {/* value={inputField.aadnum} onChange={event => handleChangeInput(inputField.id, event)} */}
                           <td>
                             <input
@@ -1343,6 +1435,8 @@ function UploadDocuments({ history }) {
                             <input
                               type="text"
                               id="resume"
+                              value={pgval}
+                              onChange={(e) => setPgValue(e.target.value)}
                               name="resume"
                               className="form-control"
                               disabled={!pg}
@@ -1386,6 +1480,7 @@ function UploadDocuments({ history }) {
                           <td>
                             <input
                               type="file"
+                              accept="jpeg,jpg,png"
                               onChange={fileHandler9}
                               id={10}
                               name="photo"
@@ -1396,6 +1491,8 @@ function UploadDocuments({ history }) {
                           <td>
                             <input
                               type="text"
+                              value={photoval}
+                              onChange={(e) => setphotoValue(e.target.value)}
                               id="resume"
                               name="resume"
                               className="form-control"
@@ -1452,6 +1549,8 @@ function UploadDocuments({ history }) {
                             <input
                               type="text"
                               id="resume"
+                              value={form16val}
+                              onChange={(e) => setForm16val(e.target.value)}
                               name="resume"
                               className="form-control"
                               disabled={!form16}
@@ -1508,6 +1607,10 @@ function UploadDocuments({ history }) {
                             <input
                               type="text"
                               id="resume"
+                              value={bankstateval}
+                              onChange={(e) =>
+                                setBankstateValue(e.target.value)
+                              }
                               name="resume"
                               className="form-control"
                               disabled={!bank}
@@ -1562,6 +1665,8 @@ function UploadDocuments({ history }) {
                             <input
                               type="text"
                               id="resume"
+                              value={iicval}
+                              onChange={(e) => setiicValue(e.target.value)}
                               name="resume"
                               className="form-control"
                               disabled={!iic}
@@ -1594,6 +1699,8 @@ function UploadDocuments({ history }) {
                   </button>
                 </Card.Body>
               </Card>
+              <br />
+            
             </form>
           </div>
         </div>

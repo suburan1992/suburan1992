@@ -7,32 +7,87 @@ import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/Sidebar";
 import axios from "axios";
 import { documentlist } from "../../actions/documentActions";
+import { withStyles } from "@material-ui/core/styles";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogContent from "@material-ui/core/DialogContent";
+import DialogContentText from "@material-ui/core/DialogContentText";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import MuiDialogContent from "@material-ui/core/DialogContent";
+import MuiDialogActions from "@material-ui/core/DialogActions";
+import IconButton from "@material-ui/core/IconButton";
+import CloseIcon from "@material-ui/icons/Close";
+import Typography from "@material-ui/core/Typography";
 
 function UploadedDocument(props) {
   console.log(props.history, "abcde");
   const dispatch = useDispatch();
+
   const [show, setShow] = useState(false);
+  const [remark, setRemark] = useState("");
   const [doctorid, setdoctorId] = useState(0);
   const [step, setStep] = useState(1);
   const [rows, setRows] = useState([]);
+  const [id, setId] = useState("");
+  const [rid, setrId] = useState("");
+  const [open, setOpen] = React.useState(false);
+  const [openr, setOpenr] = React.useState(false);
+  const [lists, setList] = useState([]);
+  const [uploadData, setUploadData] = useState([]);
+  const [refresh, setRefresh] = useState(false);
+  const handlemClickOpen = (id) => {
+    dispatch(documentlist(id));
+    setId(id);
+    setOpen(true);
+  };
+  const handlemClose = () => {
+    setOpen(false);
+  };
+
+  const handlerClickOpen = (id) => {
+    setrId(id);
+    setOpenr(true);
+  };
+  const handlerClose = () => {
+    setOpenr(false);
+  };
+
+  const handleSubmitReject = () => {
+    const obj = {
+      currentAction: "Rejected by HR",
+      remark: remark,
+    };
+    axios.put("http://localhost:8090/api/onboard/" + rid, obj).then((res) => {
+      console.log(res);
+      setRemark("");
+    });
+  };
+  const Remark = (e) => {
+    setRemark(e.target.value);
+    console.log(e.target.value, "Remark:::");
+  };
   const back = useRef(null);
   const next = useRef(null);
   const reviewAndSubmit = useRef(null);
   const handleClose = () => setShow(false);
   const handleShow = (doctorid) => {
     setShow(true);
+
     dispatch(documentlist(doctorid));
   };
   const listDoc = useSelector((state) => state.listDoc);
   const { list } = listDoc;
 
+  console.log(list, "List!!!");
   const userLogin = useSelector((state) => state.userLogin);
   const { user } = userLogin;
 
   console.log(list.data, "list data");
-  useEffect(() => {
-    dispatch(documentlist());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   dispatch(documentlist());
+  // }, [dispatch]);
 
   function clickNext() {
     if (step == 1) {
@@ -112,7 +167,26 @@ function UploadedDocument(props) {
         setRows(rows.data);
       });
   }, []);
+  useEffect(() => {
+    axios
+      .get("http://localhost:8090/api/documents/list/" + user.user.id)
+      .then((res) => res.data)
+      .then((rows) => {
+        setList(rows.data);
+        var k = rows.data;
+        var l = [];
+        k.forEach((element) => {
+          l.push(element.docTitle);
+        });
+        console.log(l);
+        setUploadData(l);
+      });
+  }, [refresh]);
 
+  console.log(
+    lists,
+    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+  );
   const handleApprove = (row) => {
     const updateData = {
       doctorId: row.doctorid,
@@ -215,8 +289,11 @@ function UploadedDocument(props) {
                                 className="fas fa-eye"
                                 color="black"
                                 onClick={() => {
-                                  viewDocuments(ele.doctorid);
+                                  handlemClickOpen(ele.doctorId);
                                 }}
+                                // onClick={() => {
+                                //   viewDocuments(ele.doctorid);
+                                // }}
                               ></i>
                             </td>
                             <td>
@@ -236,16 +313,25 @@ function UploadedDocument(props) {
                                       }}
                                     ></i>
                                   </button>
-                                  <button>
+                                  {/* <button>
                                     <i
                                       className="fas fa-times"
-                                      // onClick={Reject}
+                                     
                                       style={{ color: "red" }}
                                     ></i>
-                                  </button>
+                                  </button> */}
+                                  <Button
+                                    size="small"
+                                    color="secondary"
+                                    onClick={() => {
+                                      handlerClickOpen(ele.id);
+                                    }}
+                                  >
+                                    Reject
+                                  </Button>
                                 </div>
                               ) : (
-                                "pending"
+                                "Pending"
                               )}
                             </td>
                           </tr>
@@ -544,6 +630,113 @@ function UploadedDocument(props) {
           <Modal.Footer className="d-flex justify-content-center"></Modal.Footer>
         </Modal>
       </div>
+
+      <Dialog
+        fullWidth={true}
+        maxWidth="md"
+        onClose={handlemClose}
+        aria-labelledby="customized-dialog-title"
+        open={open}
+      >
+        <DialogTitle id="customized-dialog-title" onClose={handlemClose}>
+          Uploaded Documents
+        </DialogTitle>
+        <DialogContent dividers>
+          <Card style={formStyle}>
+            <Card.Header style={headerStyle}></Card.Header>
+            <Card.Body
+              style={bodyStyle}
+              style={{ overflowY: "auto", height: "300px" }}
+            >
+              <Table style={{ width: "100%" }} borderless>
+                <thead>
+                  <tr
+                    style={{
+                      textAlign: "center",
+                      borderBottom: "1px solid rgb(200, 200, 200)",
+                    }}
+                  >
+                    <th className="col-2">Document Title</th>
+                    <th className="col-2"> File</th>
+                  </tr>
+                  {/* )} */}
+                </thead>
+                <tbody>
+                  {list &&
+                    list.data &&
+                    list.data.map((ele) => (
+                      <tr>
+                        <td style={{ textAlign: "center" }}>{ele.docTitle}</td>
+                        <td style={{ cursor: "pointer", textAlign: "center" }}>
+                          {" "}
+                          <i
+                            className="fas fa-file"
+                            onClick={() =>
+                              handleDownload(ele.url, ele.docTitle)
+                            }
+                            title={"Download"}
+                            style={{ fontSize: "22px" }}
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </Table>
+            </Card.Body>
+          </Card>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={handlemClose}
+            color="secondary"
+            variant="contained"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        fullWidth={true}
+        maxWidth="md"
+        onClose={handlerClose}
+        aria-labelledby="customized-dialog-title"
+        open={openr}
+      >
+        <DialogTitle id="customized-dialog-title" onClose={handlerClose}>
+          Reject
+        </DialogTitle>
+        <DialogContent dividers>
+          <label>
+            <b>Remark</b>
+          </label>
+          <textarea
+            type="text"
+            onChange={Remark}
+            style={{ color: "black", border: "1px solid black" }}
+            className="form-control"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={handleSubmitReject}
+            color="primary"
+            variant="contained"
+          >
+            Submit
+          </Button>
+          <Button
+            autoFocus
+            onClick={handlerClose}
+            color="secondary"
+            variant="contained"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 }

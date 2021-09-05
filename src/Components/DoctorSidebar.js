@@ -67,9 +67,9 @@ function DoctorSidebar({userType}) {
       </li> */}
      
       <li
-        className={splitLocation[1] === "upload-documents" ? "active "+"nav-item" : "active "+"nav-item"}
+        className={splitLocation[1] === "DoctorDashboard" ? "active "+"nav-item" : "active "+"nav-item"}
       >
-        <Link to="/upload-documents" className="nav-link" id="nav-link">
+        <Link to="/DoctorDashboard" className="nav-link" id="nav-link">
         <span className="shape1"></span>
        <span className="shape2"></span>
           <i className="ti-bookmark-alt sidemenu-icon mr-2"></i>

@@ -37,6 +37,7 @@ export const createPositions = (postdata) => async (dispatch, getState) => {
         category: postdata.typelist,
         departmentLabel: postdata.departmentlist,
         description: postdata.descriptionInfo,
+        comments: postdata.comments,
         centerNames: postdata.centerlist,
         status: 1,
       },

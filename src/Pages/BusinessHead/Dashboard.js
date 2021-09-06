@@ -494,12 +494,7 @@ function Dashboard({ reqTableData, history }) {
         <Modal.Body>
           <div className="row">
             <div className="col-6">
-              <label
-                className="tx-inverse"
-                style={{ textDecoration: "underline" }}
-              >
-                Select a Designation
-              </label>
+              <label className="tx-inverse">Select a Designation</label>
               <select
                 className="form-control"
                 style={{ color: "black" }}
@@ -515,12 +510,7 @@ function Dashboard({ reqTableData, history }) {
               <br />
             </div>
             <div className="col-6 ">
-              <label
-                className="tx-inverse"
-                style={{ textDecoration: "underline" }}
-              >
-                Select a Position Type
-              </label>
+              <label className="tx-inverse">Select a Position Type</label>
               <select
                 className="form-control"
                 style={{ color: "black" }}
@@ -538,12 +528,7 @@ function Dashboard({ reqTableData, history }) {
               </select>
             </div>
             <div className="col-6 ">
-              <label
-                className="tx-inverse"
-                style={{ textDecoration: "underline" }}
-              >
-                Select a Specialization
-              </label>
+              <label className="tx-inverse">Select a Specialization</label>
               <select
                 className="form-control"
                 style={{ color: "black" }}
@@ -558,12 +543,7 @@ function Dashboard({ reqTableData, history }) {
               </select>
             </div>
             <div className="col-6">
-              <label
-                className="tx-inverse"
-                style={{ textDecoration: "underline" }}
-              >
-                Select the Branch
-              </label>
+              <label className="tx-inverse">Select the Branch</label>
               <select
                 className="form-control"
                 style={{ color: "black" }}
@@ -581,17 +561,14 @@ function Dashboard({ reqTableData, history }) {
               <br />
             </div>
             <div className="col-12">
-              <label
-                className="tx-inverse"
-                style={{ textDecoration: "underline" }}
-              >
-                Reason for Position Creation
-              </label>
+              <label className="tx-inverse">Reason for Position Creation</label>
               <textarea
                 style={{ color: "black" }}
                 class="form-control"
                 placeholder="Textarea"
                 rows="3"
+                name="comments"
+                id="comments"
                 onChange={selectedValue}
               ></textarea>
             </div>

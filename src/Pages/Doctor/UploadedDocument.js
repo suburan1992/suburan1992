@@ -37,6 +37,8 @@ function UploadedDocument(props) {
   const [lists, setList] = useState([]);
   const [uploadData, setUploadData] = useState([]);
   const [refresh, setRefresh] = useState(false);
+  const [openRemark, setOpenRemark] = React.useState(false);
+  const [viewRemark, setViewRemark] = useState("");
   const handlemClickOpen = (id) => {
     dispatch(documentlist(id));
     setId(id);
@@ -62,6 +64,7 @@ function UploadedDocument(props) {
     axios.put("http://localhost:8090/api/onboard/" + rid, obj).then((res) => {
       console.log(res);
       setRemark("");
+      setOpenr(false);
     });
   };
   const Remark = (e) => {
@@ -183,10 +186,6 @@ function UploadedDocument(props) {
       });
   }, [refresh]);
 
-  console.log(
-    lists,
-    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-  );
   const handleApprove = (row) => {
     const updateData = {
       doctorId: row.doctorid,
@@ -201,6 +200,14 @@ function UploadedDocument(props) {
   function viewDocuments(id) {
     setdoctorId(id);
   }
+
+  const handleRemarkOpen = (remark) => {
+    setViewRemark(remark);
+    setOpenRemark(true);
+  };
+  const handleCloseRemark = () => {
+    setOpenRemark(false);
+  };
 
   return (
     <>
@@ -234,6 +241,7 @@ function UploadedDocument(props) {
                         <th className="col-3">Current Action</th>
                         <th className="col-2">Next Action</th>
                         <th>View Documents</th>
+                        <th>View Remark</th>
                         {/* <th className="col-2">Additional Information</th> */}
                         <th className="col-1">Approve/Reject</th>
                       </tr>
@@ -253,37 +261,6 @@ function UploadedDocument(props) {
                             <td>{ele.name}</td>
                             <td>{ele.currentAction}</td>
                             <td>{ele.nextAction}</td>
-                            {/* <td>
-                              <input
-                                type="text"
-                                id="resume"
-                                name="resume"
-                                value={ele.docValue}
-                                className="form-control"
-                                disabled
-                              />
-                            </td> */}
-                            {/* <td className="align" style={{ cursor: "pointer" }}>
-                              <i
-                                className="fas fa-file"
-                                onClick={() =>
-                                  handleDownload(ele.url, ele.docTitle)
-                                }
-                                title={"Download"}
-                                style={{ fontSize: "22px" }}
-                              />
-                            </td> */}
-                            {/* <td className="align">{ele.name}</td> */}
-                            {/* <td>
-                              <input
-                                type="text"
-                                id="resume"
-                                name="resume"
-                                value={ele.verificationRemark}
-                                className="form-control"
-                                disabled
-                              />
-                            </td> */}
                             <td>
                               <i
                                 className="fas fa-eye"
@@ -291,14 +268,26 @@ function UploadedDocument(props) {
                                 onClick={() => {
                                   handlemClickOpen(ele.doctorId);
                                 }}
-                                // onClick={() => {
-                                //   viewDocuments(ele.doctorid);
-                                // }}
                               ></i>
                             </td>
+                            {!ele.remark ? (
+                              <td>NA</td>
+                            ) : (
+                              <td>
+                                <i
+                                  className="fas fa-eye"
+                                  color="red"
+                                  onClick={() => {
+                                    handleRemarkOpen(ele.remark);
+                                  }}
+                                ></i>
+                              </td>
+                            )}
                             <td>
                               {ele.currentAction === "rd-approval" ? (
                                 "Approved"
+                              ) : ele.currentAction === "Rejected by HR" ? (
+                                "Rejected"
                               ) : ele.currentAction === "hr-verification" ? (
                                 <div>
                                   <button>
@@ -313,13 +302,7 @@ function UploadedDocument(props) {
                                       }}
                                     ></i>
                                   </button>
-                                  {/* <button>
-                                    <i
-                                      className="fas fa-times"
-                                     
-                                      style={{ color: "red" }}
-                                    ></i>
-                                  </button> */}
+
                                   <Button
                                     size="small"
                                     color="secondary"
@@ -331,7 +314,7 @@ function UploadedDocument(props) {
                                   </Button>
                                 </div>
                               ) : (
-                                "Pending"
+                                " "
                               )}
                             </td>
                           </tr>
@@ -638,7 +621,11 @@ function UploadedDocument(props) {
         aria-labelledby="customized-dialog-title"
         open={open}
       >
-        <DialogTitle id="customized-dialog-title" onClose={handlemClose}>
+        <DialogTitle
+          id="customized-dialog-title"
+          onClose={handlemClose}
+          style={{ textAlign: "center" }}
+        >
           Uploaded Documents
         </DialogTitle>
         <DialogContent dividers>
@@ -704,7 +691,11 @@ function UploadedDocument(props) {
         aria-labelledby="customized-dialog-title"
         open={openr}
       >
-        <DialogTitle id="customized-dialog-title" onClose={handlerClose}>
+        <DialogTitle
+          id="customized-dialog-title"
+          onClose={handlerClose}
+          style={{ textAlign: "center" }}
+        >
           Reject
         </DialogTitle>
         <DialogContent dividers>
@@ -730,6 +721,35 @@ function UploadedDocument(props) {
           <Button
             autoFocus
             onClick={handlerClose}
+            color="secondary"
+            variant="contained"
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog
+        fullWidth={true}
+        maxWidth="md"
+        onClose={handleCloseRemark}
+        aria-labelledby="customized-dialog-title"
+        open={openRemark}
+      >
+        <DialogTitle
+          id="customized-dialog-title"
+          onClose={handlerClose}
+          style={{ textAlign: "center" }}
+        >
+          Remark
+        </DialogTitle>
+        <DialogContent dividers>
+          <Typography gutterBottom>{viewRemark}</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            autoFocus
+            onClick={handleCloseRemark}
             color="secondary"
             variant="contained"
           >

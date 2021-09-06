@@ -296,42 +296,46 @@ function RequestTable({ reqTableData, reqType, match, history }) {
           {/* {addpos.data && addpos.data.map((ele,index) =>( */}
           <div className="row">
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Request Id</label>
+              <label className="tx-inverse  ">Request Id</label>
               <input
                 className="form-control"
                 id="RequestId"
                 value={findpos.id}
                 placeholder="Input box"
                 type="text"
+                style={{color:"black"}}
               />
               <br />
-              <label className="tx-inverse text-muted">Onboarding Type</label>
+              <label className="tx-inverse  ">Onboarding Type</label>
               <input
                 className="form-control"
                 id="RequestType"
                 placeholder="Input box"
                 value={findpos.category}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
 
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Request Raised By</label>
+              <label className="tx-inverse  ">Request Raised By</label>
               <input
                 className="form-control"
                 id="RequestRaisedBy"
                 placeholder="Input box"
                 value={findpos.label}
                 type="text"
+                style={{color:"black"}}
               />
               <br />
-              <label className="tx-inverse text-muted">Date</label>
+              <label className="tx-inverse ">Date</label>
               <input
                 className="form-control"
                 id="Date"
                 placeholder="Input box"
                 value={findpos.createdAt}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
           </div>
@@ -339,82 +343,91 @@ function RequestTable({ reqTableData, reqType, match, history }) {
           <br />
           <div className="row">
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Subject</label>
+              <label className="tx-inverse ">Subject</label>
               <input
                 className="form-control"
                 id="Subject"
                 placeholder="Input box"
                 value={findpos.designationLabel}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
 
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Current Status</label>
+              <label className="tx-inverse  ">Current Status</label>
               <input
                 className="form-control"
                 id="CurrentStatus"
                 placeholder="Input box"
                 value={findpos.status}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
           </div>
           <br />
           <div className="row">
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Designation</label>
+              <label className="tx-inverse  ">Designation</label>
               <input
                 className="form-control"
                 id="Subject"
                 placeholder="Input box"
                 value={findpos.designationLabel}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
 
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Category</label>
+              <label className="tx-inverse ">Category</label>
               <input
                 className="form-control"
                 id="CurrentStatus"
                 placeholder="Input box"
                 value={findpos.category}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
           </div>
           <br />
           <div className="row">
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Department</label>
+              <label className="tx-inverse  ">Department</label>
               <input
                 className="form-control"
                 id="Subject"
                 placeholder="Input box"
                 value={findpos.departmentLabel}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
 
             <div className="col-6 ">
-              <label className="tx-inverse text-muted">Center Name</label>
+              <label className="tx-inverse  ">Center Name</label>
               <input
                 className="form-control"
                 id="CurrentStatus"
                 placeholder="Input box"
                 value={findpos.centerNames}
                 type="text"
+                style={{color:"black"}}
               />
             </div>
           </div>
 
           <br />
-          <label className="tx-inverse text-muted">Comments</label>
+          <label className="tx-inverse  ">Comments</label>
           <textarea
             class="form-control"
+            value={findpos.comments}
+            id="comments"
             placeholder="Textarea"
             rows="3"
+            style={{color:"black"}}
           ></textarea>
 
           {/* <p className="tx-inverse "> Personal Information</p>

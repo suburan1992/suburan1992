@@ -9,6 +9,7 @@ import Message from "../../Components/Message";
 import Footer from "../../Components/Footer";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import DeleteIcon from "@material-ui/icons/Delete";
 import { v4 as uuidv4 } from "uuid";
 
 function DoctorDashboard({ history }) {
@@ -148,6 +149,16 @@ function DoctorDashboard({ history }) {
         setRoWData(res.data.onBoardData[0].id);
       });
   }, []);
+
+  const deleteDoc = (id) => {
+    var k = window.confirm("Are you sure want to delete this record ?");
+    if (k) {
+      axios.delete("http://localhost:8090/api/documents/" + id).then((res) => {
+        console.log(res, "deletedwala indicator");
+        getAllDocList();
+      });
+    }
+  };
 
   const handleSubmit = (e, onUploadProgress) => {
     e.preventDefault();
@@ -712,7 +723,7 @@ function DoctorDashboard({ history }) {
   //     });
   // };
 
-  useEffect(() => {
+  function getAllDocList() {
     axios
       .get("http://localhost:8090/api/documents/list/" + user.user.id)
       .then((res) => res.data)
@@ -723,12 +734,13 @@ function DoctorDashboard({ history }) {
         k.forEach((element) => {
           l.push(element.docTitle);
         });
-        console.log(
-          l,
-          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-        );
+
         setUploadData(l);
       });
+  }
+
+  useEffect(() => {
+    getAllDocList();
   }, [refresh]);
   console.log(list, "listtttttt");
   // var array = [];
@@ -765,18 +777,21 @@ function DoctorDashboard({ history }) {
                 <Card.Header style={headerStyle}>
                   <h4> Uploaded Documents </h4>
                 </Card.Header>
-                <Card.Body style={bodyStyle} style={{overflowY:"auto", height:"300px"}}>
+                <Card.Body
+                  style={bodyStyle}
+                  style={{ overflowY: "auto", height: "300px" }}
+                >
                   <Table style={{ width: "100%" }} borderless>
                     <thead>
                       <tr
                         style={{
                           textAlign: "center",
                           borderBottom: "1px solid rgb(200, 200, 200)",
-    
                         }}
                       >
                         <th className="col-2">Document Title</th>
                         <th className="col-2"> File</th>
+                        <th className="col-2"> Remove</th>
                       </tr>
                       {/* )} */}
                     </thead>
@@ -798,6 +813,14 @@ function DoctorDashboard({ history }) {
                                 }
                                 title={"Download"}
                                 style={{ fontSize: "22px" }}
+                              />
+                            </td>
+                            <td style={{ textAlign: "center" }}>
+                              <DeleteIcon
+                                style={{ color: "red" }}
+                                onClick={() => {
+                                  deleteDoc(ele.id);
+                                }}
                               />
                             </td>
                           </tr>
@@ -1700,7 +1723,6 @@ function DoctorDashboard({ history }) {
                 </Card.Body>
               </Card>
               <br />
-            
             </form>
           </div>
         </div>

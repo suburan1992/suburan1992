@@ -191,10 +191,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleMCRC = (e) => {
@@ -230,10 +230,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
 
@@ -265,10 +265,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleAdhaar = (e) => {
@@ -299,10 +299,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleCC = (e) => {
@@ -335,9 +335,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleAdress = (e) => {
@@ -369,10 +370,7 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        // toast("Success");
-        // setTimeout(() => {
-        //   window.location.reload();
-        // }, 3000);
+     
       });
   };
   const handlePayslip = (e) => {
@@ -407,7 +405,7 @@ function DoctorDashboard({ history }) {
         }
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleMbbs = (e) => {
@@ -438,10 +436,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handlePg = (e) => {
@@ -476,7 +474,7 @@ function DoctorDashboard({ history }) {
         }
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handlePhoto = (e) => {
@@ -507,10 +505,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
-        toast("Success");
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleForm16 = (e) => {
@@ -550,7 +548,7 @@ function DoctorDashboard({ history }) {
         }
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleBank = (e) => {
@@ -587,7 +585,7 @@ function DoctorDashboard({ history }) {
         }
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   const handleIIC = (e) => {
@@ -618,9 +616,10 @@ function DoctorDashboard({ history }) {
             position: toast.POSITION.TOP_RIGHT,
           });
         }
+        toast.success("Success");
         setTimeout(() => {
           window.location.reload();
-        }, 3000);
+        }, 1000);
       });
   };
   function clickNext() {
@@ -675,6 +674,11 @@ function DoctorDashboard({ history }) {
       .then((res) => {
         console.log(res);
       });
+      setTimeout(() => {
+        toast.success("Successfully Submitted!")
+        window.location.reload();
+      }, 1000);
+     
     // history.push("/Doctor-Profile");
   };
 

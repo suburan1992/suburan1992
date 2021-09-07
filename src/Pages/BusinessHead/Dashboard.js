@@ -84,12 +84,16 @@ function Dashboard({ reqTableData, history }) {
     dispatch(formlist());
   }, [dispatch]);
 
+  console.log(users, "123");
+  // console.log(users, "&&users&&");
   const handleCreatePosition = () => {
+    
+  console.log(data, "data");
     dispatch(createPositions(data));
-    toast("Success");
+    toast.success("Success");
     setTimeout(() => {
       window.location.reload();
-    }, 3000);
+    }, 1000);
   };
   const info = "Clearing Exceptions";
 

@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState ,useEffect} from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Select from 'react-select';
 import { Modal, Button, Container, Row, Col, Card } from "react-bootstrap";
 import CountUp from "react-countup";
@@ -17,6 +18,7 @@ import {
   CircularProgressbarWithChildren,
   buildStyles,
 } from "react-circular-progressbar";
+import { listusers } from "../../actions/userActions";
 import "react-circular-progressbar/dist/styles.css";
 import doctorLogo from "../../images/doctor.png";
 import renewalLogo from "../../images/migrate.png";
@@ -26,7 +28,7 @@ function Dashboard({ reqTableData ,history}) {
   const [newVis, setNewVis] = useState("hiddenDiv");
   const [ongVis, setOngVis] = useState("hiddenDiv");
   const [compVis, setCompVis] = useState("hiddenDiv");
-
+  const dispatch = useDispatch();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
@@ -42,8 +44,18 @@ function Dashboard({ reqTableData ,history}) {
     fontSize: "13px",
   };
 
+  const userList = useSelector((state) => state.userList);
+  const { users } = userList;
+
+
   const info = "Clearing Exceptions";
 
+  
+  useEffect(() => {
+    dispatch(listusers());
+  }, [dispatch]);
+
+  console.log(users,"&&users&&");
   function tabChange(stat) {
     if (stat == "new") {
       if (newVis == "hiddenDiv") {

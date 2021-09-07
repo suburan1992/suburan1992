@@ -6,6 +6,7 @@ import { Modal } from "react-bootstrap";
 import Navbar from "../../Components/Navbar";
 import Sidebar from "../../Components/Sidebar";
 import axios from "axios";
+import { listusers } from "../../actions/userActions";
 import { documentlist } from "../../actions/documentActions";
 import { withStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
@@ -58,7 +59,8 @@ function UploadedDocument(props) {
 
   const handleSubmitReject = () => {
     const obj = {
-      currentAction: "Rejected by HR",
+      currentAction: "Initiated",
+      nextAction: "Document Uploading",
       remark: remark,
     };
     axios.put("http://localhost:8090/api/onboard/" + rid, obj).then((res) => {
@@ -66,6 +68,9 @@ function UploadedDocument(props) {
       setRemark("");
       setOpenr(false);
     });
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
   const Remark = (e) => {
     setRemark(e.target.value);
@@ -87,7 +92,9 @@ function UploadedDocument(props) {
   const userLogin = useSelector((state) => state.userLogin);
   const { user } = userLogin;
 
-  console.log(list.data, "list data");
+  const userList = useSelector((state) => state.userList);
+  const { users } = userList;
+
   // useEffect(() => {
   //   dispatch(documentlist());
   // }, [dispatch]);
@@ -195,6 +202,9 @@ function UploadedDocument(props) {
     axios
       .put("http://localhost:8090/api/onboard/" + row.id, updateData)
       .then((res) => {});
+    setTimeout(() => {
+      window.location.reload();
+    }, 1000);
   };
 
   function viewDocuments(id) {
@@ -208,7 +218,14 @@ function UploadedDocument(props) {
   const handleCloseRemark = () => {
     setOpenRemark(false);
   };
+  useEffect(() => {
+    dispatch(listusers());
+  }, [dispatch]);
 
+  console.log(
+    users[0] && users[0].users_role_id,
+    "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+  );
   return (
     <>
       <Sidebar />
@@ -242,8 +259,11 @@ function UploadedDocument(props) {
                         <th className="col-2">Next Action</th>
                         <th>View Documents</th>
                         <th>View Remark</th>
-                        {/* <th className="col-2">Additional Information</th> */}
-                        <th className="col-1">Approve/Reject</th>
+                        {users[0] && users[0].users_role_id === 2 ? (
+                          ""
+                        ) : (
+                          <th className="col-1">Approve/Reject</th>
+                        )}
                       </tr>
                     </thead>
                     <tbody>
@@ -261,6 +281,7 @@ function UploadedDocument(props) {
                             <td>{ele.name}</td>
                             <td>{ele.currentAction}</td>
                             <td>{ele.nextAction}</td>
+
                             <td>
                               <i
                                 className="fas fa-eye"
@@ -283,40 +304,44 @@ function UploadedDocument(props) {
                                 ></i>
                               </td>
                             )}
-                            <td>
-                              {ele.currentAction === "rd-approval" ? (
-                                "Approved"
-                              ) : ele.currentAction === "Rejected by HR" ? (
-                                "Rejected"
-                              ) : ele.currentAction === "hr-verification" ? (
-                                <div>
-                                  <button>
-                                    <i
-                                      className="fas fa-check"
+                            {users[0] && users[0].users_role_id === 2 ? (
+                              ""
+                            ) : (
+                              <td>
+                                {ele.currentAction === "rd-approval" ? (
+                                  "Approved By HR"
+                                ) : ele.currentAction === "Rejected by HR" ? (
+                                  "Rejected By HR"
+                                ) : ele.currentAction === "hr-verification" ? (
+                                  <div style={{ whiteSpace: "nowrap" }}>
+                                    <Button
+                                      size="small"
+                                      color="primary"
+                                      variant="contained"
                                       onClick={() => {
                                         handleApprove(ele);
                                       }}
-                                      style={{
-                                        color: "green",
-                                        marginRight: "2rem",
-                                      }}
-                                    ></i>
-                                  </button>
+                                    >
+                                      Approve
+                                    </Button>
 
-                                  <Button
-                                    size="small"
-                                    color="secondary"
-                                    onClick={() => {
-                                      handlerClickOpen(ele.id);
-                                    }}
-                                  >
-                                    Reject
-                                  </Button>
-                                </div>
-                              ) : (
-                                " "
-                              )}
-                            </td>
+                                    <Button
+                                      style={{ marginLeft: "5px" }}
+                                      size="small"
+                                      color="secondary"
+                                      variant="contained"
+                                      onClick={() => {
+                                        handlerClickOpen(ele.id);
+                                      }}
+                                    >
+                                      Reject
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  " "
+                                )}
+                              </td>
+                            )}
                           </tr>
                         ))}
                       {/* <tr style={{borderBottom:"1px solid rgb(200, 200, 200)"}}>

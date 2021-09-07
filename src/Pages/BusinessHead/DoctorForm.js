@@ -10,6 +10,7 @@ import Box from "@material-ui/core/Box";
 import TextField from "@material-ui/core/TextField";
 import Autocomplete from "@material-ui/lab/Autocomplete";
 import AddIcon from "@material-ui/icons/Add";
+import RefreshIcon from "@material-ui/icons/Refresh";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import MaterialTable from "material-table";
@@ -168,6 +169,10 @@ function DoctorForm({ history }) {
   const [selecteddata, setSelectedData] = useState({});
   const [show, setShow] = useState(false);
   const [Consultation, setConsultation] = useState("");
+  const [Package, setPackage] = useState("");
+  const [IpRoom, setIpRoom] = useState("");
+  const [IpMop, setIpMop] = useState("");
+
   const [ctcpermonth, setCtcpermonth] = useState("");
   const [indemnityvalue, setindemnityvalue] = useState("");
   const [indemnityexpiry, setindemnityexpiry] = useState("");
@@ -188,32 +193,23 @@ function DoctorForm({ history }) {
   const [opservice, setOpservice] = useState({
     initialFormtState,
   });
+  const initialFormtStateipservice = {
+    ipconsultaion: "",
+    iproom: "",
+    ipmodeofpayment: "",
+    ipfixedamount: "",
+    ipsurgeonfeeperc: "",
+    ippackageamountperc: "",
+    ipgrossperc: "",
+    netperc: "",
+    amount: "",
+    count: "",
+    revenue: "",
+    payout: "",
+  };
   const [ipservice, setIpservice] = useState([
     {
-      ipfixedroom: "",
-      ipfixedmodeofpay: "",
-      ipfixedamount: "",
-      ipsurgeonfee: "",
-      ippackageamount: "",
-      ipgrossbillamount: "",
-      ipnetbillamount: "",
-      ippercamount: "",
-      ipcount: "",
-      iprevenue: "",
-      ippayout: "",
-    },
-    {
-      ipfixedroom: "",
-      ipfixedmodeofpay: "",
-      ipfixedamount: "",
-      ipsurgeonfee: "",
-      ippackageamount: "",
-      ipgrossbillamount: "",
-      ipnetbillamount: "",
-      ippercamount: "",
-      ipcount: "",
-      iprevenue: "",
-      ippayout: "",
+      initialFormtStateipservice,
     },
   ]);
   const [noticeperiod, setnoticeperiod] = useState("");
@@ -225,6 +221,7 @@ function DoctorForm({ history }) {
   const [calculateData, setCalculateData] = useState(0);
   const [procName, setProcName] = useState("");
   const [table, setTable] = useState([]);
+  const [iptable, setIptable] = useState([]);
   const [unit, setUnit] = useState("");
   const [percentage, setPercentage] = useState("");
   const [count, setCount] = useState("");
@@ -242,6 +239,11 @@ function DoctorForm({ history }) {
   const [adhoc, setAdhoc] = useState("");
   const [totalnetAmount, setTotalnetAmount] = useState([]);
   const [totalpayout, setTotalpayout] = useState([]);
+  const [age, setAge] = React.useState("");
+
+  const handleChangeRoom = (event) => {
+    setAge(event.target.value);
+  };
 
   const makeVisible = () => {
     if (!visible) {
@@ -280,6 +282,8 @@ function DoctorForm({ history }) {
   // setRegionId(k.region_id);
   const getOnboard = useSelector((state) => state.getOnboard);
   const { getonboard } = getOnboard;
+
+  console.log(location.state.data.id, "%%%%!!");
 
   useEffect(() => {
     dispatch(addonboard());
@@ -337,12 +341,28 @@ function DoctorForm({ history }) {
         console.log(res);
         setOnoardData(res.data.doctorData.id);
         setBackDropOpen(false);
-        if (res.data != null) {
-          history.push({
-            pathname: "/Test",
-            state: { data: res.data.doctorData.id },
+
+        const obj = {
+          doctorId: res.data.doctorData.id,
+        };
+        axios
+          .put(
+            "http://localhost:8090/api/vacancies/" + location.state.data.id,
+            obj
+          )
+          .then((res) => {
+            console.log(res);
           });
-        }
+        setTimeout(() => {
+          toast.success("Successly Submitted!");
+          window.location.reload();
+        }, 1000);
+        // if (res.data != null) {
+        // history.push({
+        //   // pathname: "/Test",
+        //   state: { data: res.data.doctorData.id },
+        // });
+        // }
       });
 
     //   toast(z);
@@ -446,6 +466,44 @@ function DoctorForm({ history }) {
     // alert(e.target.value);
     setConsultation(e.target.value);
   };
+
+  const getPackageValue = (e) => {
+    setPackage(e.target.value);
+  };
+
+  const getIpRoomValue = (e) => {
+    setIpRoom(e.target.value);
+  };
+
+  const getIpMopValue = (e) => {
+    setIpMop(e.target.value);
+  };
+
+  const handleIpserviceInputChange = (event) => {
+    const { name, value } = event.target;
+    setIpservice({ ...ipservice, [name]: value });
+  };
+
+  const addIpTableData = () => {
+    ipservice.consultation = Package;
+    ipservice.iproom = IpRoom;
+    ipservice.ipmodeofpayment = IpMop;
+
+    console.log(ipservice, "SUBRAT");
+    setIptable((prevItems) => [...prevItems, ipservice]);
+    setIpservice(initialFormtStateipservice);
+    setPackage("");
+    setIpRoom("");
+    setIpMop("");
+  };
+  const RefreshIpRecord = () => {
+    setIpservice(initialFormtStateipservice);
+    setPackage("");
+    setIpRoom("room");
+    setIpMop("");
+  };
+
+  console.log(iptable, "SUBRAT PARIDA");
   const addTableData = () => {
     // opservice.opamount = calculateData;
     // opservice.oprevenue = calculateData;
@@ -466,6 +524,13 @@ function DoctorForm({ history }) {
     setAdhoc("");
     setAmount("");
     setCalculateData(0);
+  };
+  const refreshopRecord = () => {
+    setOpservice(initialFormtState);
+    setFixedPay("");
+    setpayout("");
+    setAdhoc("");
+    setAmount("");
   };
 
   console.log(totalnetAmount, "totalamount");
@@ -514,6 +579,22 @@ function DoctorForm({ history }) {
       }
       var data = table.filter((z) => z.consultation != row.consultation);
       setTable(data);
+    }
+  };
+
+  const deleteIptableRow = (row) => {
+    var k = window.confirm("Are you sure want to delete this record ?");
+    if (k) {
+      // const index = totalnetAmount.indexOf(row.netamount);
+      // if (index > -1) {
+      //   totalnetAmount.splice(index, 1);
+      // }
+      // const index1 = totalpayout.indexOf(row.oppayout);
+      // if (index > -1) {
+      //   totalpayout.splice(index, 1);
+      // }
+      var data = iptable.filter((z) => z.consultation != row.consultation);
+      setIptable(data);
     }
   };
 
@@ -765,7 +846,7 @@ function DoctorForm({ history }) {
                   <br />
                   <Row>
                     <Col md={6}>
-                      <label for="doctor-name" className="onboard-label">
+                      <label for="doctor-name">
                         <h6>Name in Full</h6>
                       </label>
                       <div className="form-group">
@@ -783,18 +864,20 @@ function DoctorForm({ history }) {
                           type="text"
                           placeholder="Doctor's Full Name"
                           id="fullname"
+                          style={{ color: "#000000" }}
                           onChange={selectedValue}
                         />
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="birthday" className="onboard-label">
+                      <label for="birthday">
                         <h6>Date of Birth</h6>
                       </label>
 
                       <input
                         type="date"
                         id="birthday"
+                        style={{ color: "#000000" }}
                         name="birthday"
                         className="form-control"
                         onChange={selectedValue}
@@ -803,7 +886,7 @@ function DoctorForm({ history }) {
                   </Row>
                   <Row>
                     <Col md={6}>
-                      <label for="doctor-name" className="onboard-label">
+                      <label for="doctor-name">
                         <h6>Father's Name/ Husband's Name</h6>
                       </label>
                       <div className="form-group">
@@ -819,6 +902,7 @@ function DoctorForm({ history }) {
                         <input
                           className="form-control form-doctor"
                           type="text"
+                          style={{ color: "#000000" }}
                           placeholder="Father/Husband Name"
                           id="fathername"
                           onChange={selectedValue}
@@ -826,19 +910,20 @@ function DoctorForm({ history }) {
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="address" className="onboard-label">
+                      <label for="address">
                         <h6>Address</h6>
                       </label>
                       <textarea
                         type="text"
                         placeholder="Address"
+                        style={{ color: "#000000" }}
                         id="Address"
                         className="form-control"
                         onChange={selectedValue}
                       />
                     </Col>
                     {/* <Col md={6}>
-                      <label for="birthday" className="onboard-label">
+                      <label for="birthday">
                         <h6>Date of Birth</h6>
                       </label>
 
@@ -853,7 +938,7 @@ function DoctorForm({ history }) {
                   </Row>
                   <Row>
                     <Col md={6}>
-                      <label for="doctor-contact" className="onboard-label">
+                      <label for="doctor-contact">
                         <h6>Contact Number</h6>
                       </label>
                       <div className="form-group">
@@ -861,6 +946,7 @@ function DoctorForm({ history }) {
                         <input
                           className="form-control form-doctor"
                           type="text"
+                          style={{ color: "#000000" }}
                           placeholder="Contact Number"
                           id="mobile"
                           name="doctor-contact"
@@ -869,11 +955,12 @@ function DoctorForm({ history }) {
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="email-id" className="onboard-label">
+                      <label for="email-id">
                         <h6>Email Address</h6>
                       </label>
                       <input
                         type="text"
+                        style={{ color: "#000000" }}
                         placeholder="Email Address"
                         id="email"
                         className="form-control"
@@ -891,10 +978,8 @@ function DoctorForm({ history }) {
                   <br />
                   <Row>
                     <Col md={6}>
-                      <label for="desg-name" className="onboard-label">
-                        <h6 style={{ color: "#000000" }}>
-                          <u>Designation</u>
-                        </h6>
+                      <label for="desg-name">
+                        <h6 style={{ color: "#000000" }}>Designation</h6>
                       </label>
                       <div className="form-group">
                         <input
@@ -920,7 +1005,7 @@ function DoctorForm({ history }) {
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="dept-name" className="onboard-label">
+                      <label for="dept-name">
                         <h6>Department</h6>
                       </label>
                       <input
@@ -949,7 +1034,7 @@ function DoctorForm({ history }) {
                   </Row>
                   <Row>
                     <Col md={6}>
-                      <label for="business-unit" className="onboard-label">
+                      <label for="business-unit" style={{ display: "none" }}>
                         <h6>Business Unit(s)</h6>
                       </label>
                       <div>
@@ -960,7 +1045,7 @@ function DoctorForm({ history }) {
                           className="form-control"
                           value={location.state.data.centerNames}
                           readOnly
-                          style={{ color: "#000000" }}
+                          style={{ color: "#000000", display: "none" }}
                         />
 
                         {/* <>
@@ -981,10 +1066,19 @@ function DoctorForm({ history }) {
                         </> */}
                         <br />
                         <>
-                          <FormControl component="fieldset">
-                            <FormLabel component="legend">
+                          <FormControl
+                            component="fieldset"
+                            style={{
+                              marginBottom: ".5rem",
+                              marginTop: "-.6rem",
+                            }}
+                          >
+                            <h6
+                              component="legend"
+                              style={{ color: "black", fontSize: "15px" }}
+                            >
                               Business Unit(s)
-                            </FormLabel>
+                            </h6>
                             <FormGroup aria-label="position" row>
                               {l.map((item) => (
                                 <FormControlLabel
@@ -1007,7 +1101,7 @@ function DoctorForm({ history }) {
                   </Row>
                   <Row>
                     <Col md={6}>
-                      <label for="contract-term" className="onboard-label">
+                      <label for="contract-term">
                         <h6>Specific Period of Contract</h6>
                       </label>
                       <div className="form-group">
@@ -1015,6 +1109,7 @@ function DoctorForm({ history }) {
                         <input
                           className="form-control form-doctor"
                           type="number"
+                          style={{ color: "#000000" }}
                           placeholder="Contract Term"
                           id="contractlength"
                           name="contract-term"
@@ -1023,12 +1118,13 @@ function DoctorForm({ history }) {
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="doj" className="onboard-label">
+                      <label for="doj">
                         <h6>Joining Date</h6>
                       </label>
                       <input
                         type="date"
                         id="doj"
+                        style={{ color: "#000000" }}
                         name="doj"
                         className="form-control"
                         onChange={selectedValue}
@@ -1038,7 +1134,7 @@ function DoctorForm({ history }) {
                   <Row>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6>Highest PG Degree</h6>
                       </label>
                       <div className="form-group">
@@ -1047,12 +1143,13 @@ function DoctorForm({ history }) {
                           type="text"
                           placeholder="Highest PG Degree"
                           id="pgdegree"
+                          style={{ color: "#000000" }}
                           onChange={selectedValue}
                         />
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="pg-totalexp" className="onboard-label">
+                      <label for="pg-totalexp">
                         <h6>Post PG Degree Total Experience</h6>
                       </label>
                       <div className="form-group">
@@ -1062,13 +1159,14 @@ function DoctorForm({ history }) {
                           type="number"
                           placeholder="Post PG Degree Total Experience"
                           id="pgtotalexp"
+                          style={{ color: "#000000" }}
                           onChange={selectedValue}
                         />
                       </div>
                     </Col>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-relexp" className="onboard-label">
+                      <label for="pg-relexp">
                         <h6>Post PG Degree Relevant Experience</h6>
                       </label>
                       <div className="form-group">
@@ -1076,8 +1174,25 @@ function DoctorForm({ history }) {
                         <input
                           className="form-control form-doctor"
                           type="number"
+                          style={{ color: "#000000" }}
                           placeholder="Post PG Degree Relevant Experience"
                           id="pgrelevantexp"
+                          onChange={selectedValue}
+                        />
+                      </div>
+                    </Col>
+                    <Col md={6}>
+                      {" "}
+                      <label for="pg-relexp">
+                        <h6>Medical Degree</h6>
+                      </label>
+                      <div className="form-group">
+                        <input
+                          className="form-control form-doctor"
+                          type="text"
+                          style={{ color: "#000000" }}
+                          placeholder="Medical Degree"
+                          id="medicaldegree"
                           onChange={selectedValue}
                         />
                       </div>
@@ -1086,7 +1201,7 @@ function DoctorForm({ history }) {
                   <Row>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6>Notice Period</h6>
                       </label>
                       <div className="form-group">
@@ -1097,7 +1212,7 @@ function DoctorForm({ history }) {
                           // value={noticeperiod}
                           onChange={selectedDropdownvalue}
                         >
-                          <option>Select Notice period</option>
+                          <option>Select Notice Period</option>
 
                           <option value="15 days">15 days</option>
                           <option value="30 days">30 days</option>
@@ -1109,8 +1224,8 @@ function DoctorForm({ history }) {
                       </div>
                     </Col>
                     <Col md={6}>
-                      <label for="pg-totalexp" className="onboard-label">
-                        <h6>Lockin Period</h6>
+                      <label for="pg-totalexp">
+                        <h6>Lock'n Period</h6>
                       </label>
                       <div className="form-group">
                         <select
@@ -1120,7 +1235,7 @@ function DoctorForm({ history }) {
                           // value={lockinperiod}
                           onChange={selectedDropdownvalue}
                         >
-                          <option>Select Notice period</option>
+                          <option>Select Lock'n Period</option>
 
                           <option value="15 days">15 days</option>
                           <option value="30 days">30 days</option>
@@ -1133,15 +1248,17 @@ function DoctorForm({ history }) {
                     </Col>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-relexp" className="onboard-label">
+                      <label for="pg-relexp">
                         <h6>Indemnity insurance - value</h6>
                       </label>
                       <div className="form-group">
+                        <span>In Rs</span>
                         <input
                           className="form-control form-doctor"
                           type="number"
                           placeholder="Indemnity insurance"
                           id="indemnityvalue"
+                          style={{ color: "#000000" }}
                           value={indemnityvalue}
                           name="indemnityvalue"
                           onChange={handleindemnityvalue}
@@ -1150,7 +1267,7 @@ function DoctorForm({ history }) {
                     </Col>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-relexp" className="onboard-label">
+                      <label for="pg-relexp">
                         <h6> Indemnity insurance - Expiry </h6>
                       </label>
                       <div className="form-group">
@@ -1159,6 +1276,7 @@ function DoctorForm({ history }) {
                           type="date"
                           placeholder="Post PG Degree Relevant Experience"
                           id="indemnityexpiry"
+                          style={{ color: "#000000" }}
                           value={indemnityexpiry}
                           name="indemnityexpiry"
                           onChange={handleindemnityexpiry}
@@ -1176,13 +1294,14 @@ function DoctorForm({ history }) {
                   <br />
                   <Row>
                     <Col md={6}>
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6> State of Registration</h6>
                       </label>
                       <select
                         name="state"
                         id="selectedmcrc"
                         className="form-control"
+                        style={{ color: "#000000" }}
                         onChange={selectedDropdownvalue}
                         // value={selectedmcrc}
                         // onChange={(e) => setSelectedmcrc(e.target.value)}
@@ -1241,7 +1360,7 @@ function DoctorForm({ history }) {
 
                     <Col md={6}>
                       {" "}
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6> Medical Council Registration Certificate No</h6>
                       </label>
                       <div className="form-group">
@@ -1250,6 +1369,7 @@ function DoctorForm({ history }) {
                           value={mcrcValue}
                           id="medicalcertno"
                           onChange={selectedValue}
+                          style={{ color: "#000000" }}
                           className="form-control"
                           placeholder="Medical Council Registration Certificate No"
                         />
@@ -1259,13 +1379,14 @@ function DoctorForm({ history }) {
                   <Row>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6>PAN Card No</h6>
                       </label>
                       <div className="form-group">
                         <input
                           type="text"
                           value={panNo}
+                          style={{ color: "#000000" }}
                           id="pancardno"
                           onChange={selectedValue}
                           className="form-control"
@@ -1275,12 +1396,13 @@ function DoctorForm({ history }) {
                     </Col>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6>AADHAR Card No</h6>
                       </label>
                       <div className="form-group">
                         <input
                           type="text"
+                          style={{ color: "#000000" }}
                           value={aadNo}
                           id="aadhaarno"
                           onChange={selectedValue}
@@ -1291,7 +1413,7 @@ function DoctorForm({ history }) {
                     </Col>
                     <Col md={6}>
                       {" "}
-                      <label for="pg-degree" className="onboard-label">
+                      <label for="pg-degree">
                         <h6>Bank Details</h6>
                       </label>
                       <div className="form-group">
@@ -1310,7 +1432,7 @@ function DoctorForm({ history }) {
                           <option value="CANARA Bank">CANARA Bank</option>
                         </select>
                         <input
-                          style={{ marginLeft: "5px" }}
+                          style={{ marginLeft: "5px", color: "black" }}
                           type="text"
                           id="bankaccountno"
                           name="aad-num"
@@ -1320,7 +1442,7 @@ function DoctorForm({ history }) {
                           placeholder="Account No"
                         />
                         <input
-                          style={{ marginLeft: "5px" }}
+                          style={{ marginLeft: "5px", color: "black" }}
                           type="text"
                           id="ifsccode"
                           name="aad-num"
@@ -1757,7 +1879,7 @@ function DoctorForm({ history }) {
                         <TabPanel value={value} index={0}>
                           <Row>
                             <Col md={6}>
-                              <label for="ctc-month" className="onboard-label">
+                              <label for="ctc-month">
                                 <h6>Professional Fee /Month</h6>
                               </label>
                               <TextField
@@ -1767,6 +1889,7 @@ function DoctorForm({ history }) {
                                 value={ctcpermonth}
                                 onChange={handleInputChangeForCtc}
                                 // onBlur={unitCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Col>
@@ -1775,7 +1898,12 @@ function DoctorForm({ history }) {
                               <Button
                                 variant="contained"
                                 color="secondary"
-                                style={{ height: "80%", marginTop: "1px" }}
+                                style={{
+                                  height: "50%",
+                                  marginTop: "10px",
+                                  padding: "3px",
+                                  width: "60%",
+                                }}
                                 startIcon={<AddIcon />}
                                 fullWidth
                                 onClick={makeVisible}
@@ -1787,10 +1915,7 @@ function DoctorForm({ history }) {
                           {visible ? (
                             <Row style={{ marginTop: "10px" }}>
                               <Col md={6}>
-                                <label
-                                  for="ctc-month"
-                                  className="onboard-label"
-                                >
+                                <label for="ctc-month">
                                   <h6>Additional Fee Name</h6>
                                 </label>
                                 <TextField
@@ -1800,14 +1925,12 @@ function DoctorForm({ history }) {
                                   value={additionalfeename}
                                   onChange={handleInputChangeForAddName}
                                   // onBlur={unitCalculation}
+                                  size="small"
                                   fullWidth
                                 />
                               </Col>
                               <Col md={6}>
-                                <label
-                                  for="ctc-month"
-                                  className="onboard-label"
-                                >
+                                <label for="ctc-month">
                                   <h6>Additonal Fee value</h6>
                                 </label>
                                 <TextField
@@ -1817,6 +1940,7 @@ function DoctorForm({ history }) {
                                   value={additionalfee}
                                   onChange={handleInputChangeFoAddVal}
                                   // onBlur={unitCalculation}
+                                  size="small"
                                   fullWidth
                                 />
                               </Col>
@@ -1846,55 +1970,6 @@ function DoctorForm({ history }) {
                                     ))}
                                 </select>
                               </div>
-                              {/* <FormControl
-                                style={{ width: "100%"}}
-                              >
-                                <InputLabel id="demo-controlled-open-select-label">
-                                  Select Procedure
-                                </InputLabel>
-                                <Select
-                                  labelId="demo-controlled-open-select-label"
-                                  id="demo-controlled-open-select"
-                                  // open={open}
-                                  inputProps={{
-                                    name: "consultation",
-                                    id: "consultation",
-                                  }}
-                                  value={opservice.consultation}
-                                   
-                                  onChange={handleInputChange}
-                                >
-                                  {procedure &&
-                                    procedure.map((opt) => (
-                                      <MenuItem key={opt.id} value={opt.id}>
-                                        {opt.name}
-                                      </MenuItem>
-                                    ))}
-                                </Select>
-                              </FormControl> */}
-                              {/* <Autocomplete
-                                // fullWidth
-                                style={{ marginBottom: "20px", margin: "8px" }}
-                                id="combo-box-demo"
-                                name="consultation"
-                                style={{ width: "100%", display: "block" }}
-                                // value={opservice.consultation}
-                                onChange={(event, value) =>
-                                  getProcedureValue(value.name)
-                                }
-                                options={procedure}
-                                getOptionLabel={(option) => option.name}
-                                // style={{ width: 300 }}
-                                renderInput={(params) => (
-                                  <TextField
-                                    {...params}
-                                    label="Enter Procedure"
-                                    margin="normal"
-                                    variant="outlined"
-                                    size="small"
-                                  />
-                                )}
-                              /> */}
                             </Grid>
                             <Grid item xs={3}>
                               <TextField
@@ -1904,6 +1979,7 @@ function DoctorForm({ history }) {
                                 value={opservice.opperunitcharge}
                                 onChange={handleInputChange}
                                 onBlur={unitCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
@@ -1915,6 +1991,7 @@ function DoctorForm({ history }) {
                                 value={opservice.opcount}
                                 onChange={handleInputChange}
                                 onBlur={countCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
@@ -1926,6 +2003,7 @@ function DoctorForm({ history }) {
                                 value={amount}
                                 onChange={handleInputChange}
                                 // onBlur={fixedpayCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
@@ -1937,6 +2015,7 @@ function DoctorForm({ history }) {
                                 value={opservice.opadhoc}
                                 onChange={handleInputChange}
                                 onBlur={adhocCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
@@ -1947,6 +2026,7 @@ function DoctorForm({ history }) {
                                 label="Fixed Percentage"
                                 value={opservice.fixedpercentage}
                                 onChange={handleInputChange}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
@@ -1959,33 +2039,10 @@ function DoctorForm({ history }) {
                                 value={opservice.fixedamount}
                                 onChange={handleInputChange}
                                 onBlur={payoutCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
-
-                            {/* <Grid item xs={3}>
-                              <TextField
-                                variant="outlined"
-                                name="oppercpay"
-                                label="Percentage Payout"
-                                value={opservice.oppercpay}
-                                onChange={handleInputChange}
-                                onBlur={percentageCalculation}
-                                fullWidth
-                              />
-                            </Grid> */}
-
-                            {/* <Grid item xs={3}>
-                              <TextField
-                                variant="outlined"
-                                name="opfixedpay"
-                                label="Fixed Payout"
-                                value={opservice.opfixedpay}
-                                onChange={handleInputChange}
-                                onBlur={fixedpayCalculation}
-                                fullWidth
-                              />
-                            </Grid> */}
 
                             <Grid item xs={3}>
                               <TextField
@@ -1995,6 +2052,7 @@ function DoctorForm({ history }) {
                                 value={adhoc}
                                 onChange={handleInputChange}
                                 onBlur={fixedpayCalculation}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
@@ -2007,19 +2065,30 @@ function DoctorForm({ history }) {
                                 // value={opservice.oppayout}
                                 value={payout}
                                 onChange={handleInputChange}
+                                size="small"
                                 fullWidth
                               />
                             </Grid>
                             <Grid item xs={3}>
                               <Button
                                 variant="contained"
-                                color="secondary"
+                                color="primary"
                                 style={{ height: "100%" }}
                                 startIcon={<AddIcon />}
-                                fullWidth
+                                // fullWidth
                                 onClick={addTableData}
                               >
                                 ADD
+                              </Button>
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                style={{ height: "100%", marginLeft: "18px" }}
+                                startIcon={<RefreshIcon />}
+                                // fullWidth
+                                onClick={refreshopRecord}
+                              >
+                                REFRESH
                               </Button>
                             </Grid>
                             <Grid item xs={12}>
@@ -2047,7 +2116,10 @@ function DoctorForm({ history }) {
                                         title: "Per Unit Charge",
                                         field: "opperunitcharge",
                                       },
-                                      { title: "Revenue", field: "netamount" },
+                                      {
+                                        title: "Revenue",
+                                        field: "netamount",
+                                      },
                                       // { title: "Revenue", field: "oprevenue" },
                                       { title: "Payout", field: "oppayout" },
                                     ]}
@@ -2116,14 +2188,272 @@ function DoctorForm({ history }) {
                           )}
                         </TabPanel>
                         <TabPanel value={value} index={2}>
-                          <Row>
-                            <Col md={12}>
-                              <label for="con-rate" className="onboard-label">
-                                <h6>Packages</h6>
-                              </label>
-                            </Col>
-                            <Col md={12}>
-                              <Table
+                          <label for="con-rate">
+                            <h6>Packages</h6>
+                          </label>
+                          <Grid Container spacing="1">
+                            <Grid item xs={12}>
+                              <div className="form-group">
+                                <select
+                                  className="form-control"
+                                  style={{ color: "black" }}
+                                  id="Package"
+                                  onChange={getPackageValue}
+                                >
+                                  <option>Select Procedure</option>
+                                  {procedure &&
+                                    procedure.map((ele) => (
+                                      <option key={ele.id} value={ele.name}>
+                                        {ele.name}
+                                      </option>
+                                    ))}
+                                </select>
+                              </div>
+                            </Grid>
+                          </Grid>
+
+                          <Grid container spacing={1}>
+                            <Grid item xs={3}>
+                              <div className="form-group">
+                                <select
+                                  className="form-control"
+                                  style={{ color: "black" }}
+                                  id="IpRoom"
+                                  onChange={getIpRoomValue}
+                                >
+                                  <option value="room">Select Room</option>
+                                  <option value="Deluxe">Deluxe</option>
+                                  <option value="General">General</option>
+                                </select>
+                              </div>
+                            </Grid>
+                            <Grid item xs={3}>
+                              <div className="form-group">
+                                <select
+                                  className="form-control"
+                                  style={{ color: "black" }}
+                                  id="IpMop"
+                                  onChange={getIpMopValue}
+                                >
+                                  <option>Select MOP</option>
+                                  <option value="Card">Card</option>
+                                  <option value="Cash">Cash</option>
+                                </select>
+                              </div>
+                            </Grid>
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="ipfixedamount"
+                                label="Fixed Amount"
+                                value={ipservice.ipfixedamount}
+                                onChange={handleIpserviceInputChange}
+                                // onBlur={fixedpayCalculation}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="ipsurgeonfeeperc"
+                                label="Surgeon Fee Percentage"
+                                value={ipservice.ipsurgeonfeeperc}
+                                onChange={handleIpserviceInputChange}
+                                // onBlur={adhocCalculation}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="ippackageamountperc"
+                                label=" Package Amount Percentage"
+                                value={ipservice.ippackageamountperc}
+                                onChange={handleIpserviceInputChange}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="ipgrossperc"
+                                label="Gross Percentage"
+                                value={ipservice.ipgrossperc}
+                                onChange={handleIpserviceInputChange}
+                                // onBlur={payoutCalculation}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="netperc"
+                                label="Net Percentage"
+                                value={ipservice.netperc}
+                                onChange={handleIpserviceInputChange}
+                                // onBlur={fixedpayCalculation}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="amount"
+                                label="Amount"
+                                // value={opservice.oppayout}
+                                value={ipservice.amount}
+                                onChange={handleIpserviceInputChange}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="count"
+                                label="Count"
+                                // value={opservice.oppayout}
+                                value={ipservice.count}
+                                onChange={handleIpserviceInputChange}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="revenue"
+                                label="Revenue"
+                                // value={opservice.oppayout}
+                                value={ipservice.revenue}
+                                onChange={handleIpserviceInputChange}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="payout"
+                                label="Payout"
+                                // value={opservice.oppayout}
+                                value={ipservice.payout}
+                                onChange={handleIpserviceInputChange}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+                            <Grid item xs={3}>
+                              <Button
+                                variant="contained"
+                                color="primary"
+                                style={{ height: "100%" }}
+                                startIcon={<AddIcon />}
+                                onClick={addIpTableData}
+                              >
+                                ADD
+                              </Button>
+                              <Button
+                                variant="contained"
+                                color="secondary"
+                                style={{ height: "100%", marginLeft: "18px" }}
+                                startIcon={<RefreshIcon />}
+                                onClick={RefreshIpRecord}
+                              >
+                                REFRESH
+                              </Button>
+                            </Grid>
+                            <Grid item xs={12}>
+                              {iptable.length > 0 ? (
+                                <Paper className={tables.root}>
+                                  <MaterialTable
+                                    columns={[
+                                      {
+                                        title: "Package Name",
+                                        field: "consultation",
+                                      },
+                                      {
+                                        title: "Room Type",
+                                        field: "iproom",
+                                      },
+                                      {
+                                        title: "Mode of Payment",
+                                        field: "ipmodeofpayment",
+                                      },
+                                      {
+                                        title: "Fixed Amount",
+                                        field: "ipfixedamount",
+                                      },
+                                      {
+                                        title: "Surgeon Fee Percentage",
+                                        field: "ipsurgeonfeeperc",
+                                      },
+                                      {
+                                        title: "Package Amount Percentage",
+                                        field: "ippackageamountperc",
+                                      },
+                                      {
+                                        title: "Gross Percentage",
+                                        field: "ipgrossperc",
+                                      },
+                                      {
+                                        title: "Net Percentage",
+                                        field: "netperc",
+                                      },
+                                      {
+                                        title: "Amount",
+                                        field: "amount",
+                                      },
+                                      {
+                                        title: "Count",
+                                        field: "count",
+                                      },
+                                      { title: "Revenue", field: "revenue" },
+                                      { title: "Payout", field: "payout" },
+                                    ]}
+                                    actions={[
+                                      {
+                                        icon: "delete",
+                                        tooltip: "Delete",
+                                        iconProps: {
+                                          style: {
+                                            fontSize: "24px",
+                                            color: "#f55151",
+                                          },
+                                        },
+                                        onClick: (event, row) =>
+                                          deleteIptableRow(row),
+                                      },
+                                    ]}
+                                    data={iptable}
+                                    options={{
+                                      // filtering: true,
+                                      sorting: true,
+                                      exportButton: true,
+                                      pageSize: 5,
+                                      pageSizeOptions: [
+                                        5, 10, 50, 100, 200, 500,
+                                      ],
+                                      search: true,
+                                    }}
+                                    title="Out-Patient Service"
+                                  />
+                                </Paper>
+                              ) : (
+                                ""
+                              )}
+                            </Grid>
+                          </Grid>
+
+                          {/* <Table
                                 bordered
                                 striped
                                 hover
@@ -2196,15 +2526,7 @@ function DoctorForm({ history }) {
                                           />
                                         )}
                                       />
-                                      {/* <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="iptype"
-                                        name="iptype"
-                                        placeholder="Consultation"
-                                        class="optype"
-                                        onChange={selectedIPValue(0)}
-                                      /> */}
+                                     
                                     </td>
                                     <td>
                                       <input
@@ -2419,9 +2741,7 @@ function DoctorForm({ history }) {
                                     </td>
                                   </tr>
                                 </tbody>
-                              </Table>
-                            </Col>
-                          </Row>
+                              </Table> */}
                         </TabPanel>
                       </div>
                     </Col>

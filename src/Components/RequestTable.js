@@ -10,9 +10,30 @@ import {
 } from "../../src/actions/createPositionActions";
 import MaterialTable from "material-table";
 import VisibilityIcon from "@material-ui/icons/Visibility";
+import CalendarViewDayIcon from "@material-ui/icons/CalendarViewDay";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import { Paper } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import Dialog from "@material-ui/core/Dialog";
+import ListItemText from "@material-ui/core/ListItemText";
+import ListItem from "@material-ui/core/ListItem";
+import List from "@material-ui/core/List";
+import Divider from "@material-ui/core/Divider";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import CloseIcon from "@material-ui/icons/Close";
+import Slide from "@material-ui/core/Slide";
+import Test from "../Pages/Payout/test";
+import { listusers } from "../actions/userActions";
+import axios from "axios";
+import {
+  createOnboarding,
+  addonboard,
+  onboardById,
+} from "../actions/onboardActions";
 
 const myTableStyle = makeStyles((theme) => ({
   root: {
@@ -32,21 +53,76 @@ const myTableStyle = makeStyles((theme) => ({
   },
 }));
 
+const useStyles = makeStyles((theme) => ({
+  appBar: {
+    position: "fixed",
+  },
+  title: {
+    marginLeft: theme.spacing(2),
+    flex: 1,
+  },
+}));
+
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="up" ref={ref} {...props} />;
+});
+
 function RequestTable({ reqTableData, reqType, match, history }) {
+  const classes = useStyles();
   // const id=match.params.id
   const tables = myTableStyle();
   const [show, setShow] = useState(false);
+  const [viewAgreement, setViewAgreement] = useState(false);
+  const [row, setRows] = useState({});
+  const [doctorId, setDoctorId] = useState("");
+  const [docData, setDocData] = useState([]);
+
+  useEffect(() => {
+    axios.get("http://localhost:8090/api/onboard/" + 69).then((res) => {
+      console.log(res, "whois this");
+      setDocData(res.data);
+    });
+  }, [doctorId]);
+
+  const openAgreement = (row) => {
+    console.log(row.doctorId, "ppppp");
+    if (row.doctorId == null) {
+      alert("Onboarding In Progress");
+    } else {
+      setViewAgreement(true);
+      setRows(row);
+      dispatch(onboardById(row.doctorId));
+      setDoctorId(row.doctorId);
+    }
+  };
+  const userList = useSelector((state) => state.userList);
+  const { users } = userList;
+  const onboardId = useSelector((state) => state.onboardId);
+  const { oboard } = onboardId;
+
+  console.log(oboard, "jj");
+
+  console.log(users[0] && users[0].users_role_id, "WWWWWWWWWWWWW");
+  const closeAgreement = () => {
+    setViewAgreement(false);
+  };
   const handleClose = () => setShow(false);
-  const handleShow = (id) => {
-    setShow(true);
-    dispatch(findpositions(id));
+  const handleShow = (row) => {
+    if (row.doctorId != null) {
+      return alert("Onboard Initiated");
+    } else {
+      setShow(true);
+      dispatch(findpositions(row.id));
+    }
   };
   const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(addpositions());
   }, [dispatch]);
-
+  useEffect(() => {
+    dispatch(listusers());
+  }, [dispatch]);
   const userLogin = useSelector((state) => state.userLogin);
 
   // bringing things from the reducer
@@ -57,7 +133,8 @@ function RequestTable({ reqTableData, reqType, match, history }) {
   const findPos = useSelector((state) => state.findPos);
   const { findpos } = findPos;
   // reqTableData.forEach(dataRow => dataRow.clickEvent = (id) => handleShow(id))
-
+  console.log(findPos, "findpos");
+  console.log(addpos.data && addpos.data[0].category, "addpos");
   const [datatable, setDatatable] = React.useState({
     columns: [
       {
@@ -106,6 +183,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
     // dispatch(removeRequest(id))
   };
 
+  console.log(addpos, "lklklk");
   return (
     <div className="card custom-card" style={infoStyle}>
       {user && user.user && user.user.roles == "1" ? (
@@ -187,7 +265,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 { title: "Request Id", field: "id" },
                 { title: "Request Type", field: "category" },
                 { title: "Request Raised By", field: "label" },
-                { title: "Date", field: "createdAt" },
+                { title: "Created Date", field: "createdAt", type: "date" },
                 { title: "Designation", field: "designationLabel" },
 
                 {
@@ -206,10 +284,17 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                   icon: VisibilityIcon,
                   tooltip: "View Request",
                   iconProps: { style: { fontSize: "24px", color: "#f55151" } },
-                  // onClick={() => handleShow(ele.id)}
                   onClick: (event, row) => {
-                    handleShow(row.id);
-                    // console.log(row.id,"ifffffd");
+                    handleShow(row);
+                  },
+                },
+
+                {
+                  icon: CalendarViewDayIcon,
+                  tooltip: "View Agreement",
+                  iconProps: { style: { fontSize: "24px", color: "#ff0000" } },
+                  onClick: (event, row) => {
+                    openAgreement(row);
                   },
                 },
               ]}
@@ -303,7 +388,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 value={findpos.id}
                 placeholder="Input box"
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
               <br />
               <label className="tx-inverse  ">Onboarding Type</label>
@@ -313,7 +398,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.category}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
 
@@ -325,7 +410,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.label}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
               <br />
               <label className="tx-inverse ">Date</label>
@@ -335,7 +420,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.createdAt}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
           </div>
@@ -350,7 +435,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.designationLabel}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
 
@@ -362,7 +447,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.status}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
           </div>
@@ -376,7 +461,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.designationLabel}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
 
@@ -388,7 +473,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.category}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
           </div>
@@ -402,7 +487,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.departmentLabel}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
 
@@ -414,7 +499,7 @@ function RequestTable({ reqTableData, reqType, match, history }) {
                 placeholder="Input box"
                 value={findpos.centerNames}
                 type="text"
-                style={{color:"black"}}
+                style={{ color: "black" }}
               />
             </div>
           </div>
@@ -427,7 +512,8 @@ function RequestTable({ reqTableData, reqType, match, history }) {
             id="comments"
             placeholder="Textarea"
             rows="3"
-            style={{color:"black"}}
+            style={{ color: "black" }}
+            readOnly
           ></textarea>
 
           {/* <p className="tx-inverse "> Personal Information</p>
@@ -467,6 +553,34 @@ function RequestTable({ reqTableData, reqType, match, history }) {
           </button>
         </Modal.Footer>
       </Modal>
+
+      <Dialog
+        fullScreen
+        open={viewAgreement}
+        onClose={handleClose}
+        TransitionComponent={Transition}
+      >
+        <AppBar className={classes.appBar}>
+          <Toolbar>
+            <IconButton
+              edge="end"
+              style={{ marginLeft: "99%" }}
+              color="inherit"
+              onClick={closeAgreement}
+              aria-label="close"
+            >
+              <CloseIcon />
+            </IconButton>
+          </Toolbar>
+        </AppBar>
+        <List>
+          <Test
+            history={row}
+            recData={docData}
+            catagory={addpos.data && addpos.data[0].category}
+          />
+        </List>
+      </Dialog>
     </div>
   );
 }

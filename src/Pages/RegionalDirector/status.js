@@ -124,7 +124,8 @@ export default function RdStatus() {
   };
   const handleSubmitReject = () => {
     const obj = {
-      currentAction: "Rejected by RD",
+      currentAction: "hr-verification",
+      nextAction:"rd action",
       remark: remark,
     };
     axios.put("http://localhost:8090/api/onboard/" + rid, obj).then((res) => {
@@ -235,23 +236,23 @@ export default function RdStatus() {
 
                       <td>
                         {ele.currentAction === "rd-approval" ? (
-                          <div>
-                            <button>
-                              <i
-                                className="fas fa-check"
-                                onClick={() => {
-                                  handleApprove(ele);
-                                }}
-                                style={{
-                                  color: "green",
-                                  marginRight: "2rem",
-                                }}
-                              ></i>
-                            </button>
-
+                          <div style={{ whiteSpace: "nowrap" }}>
                             <Button
                               size="small"
+                              color="primary"
+                              variant="contained"
+                              onClick={() => {
+                                handleApprove(ele);
+                              }}
+                            >
+                              Approve
+                            </Button>
+
+                            <Button
+                              style={{ marginLeft: "5px" }}
+                              size="small"
                               color="secondary"
+                              variant="contained"
                               onClick={() => {
                                 handlerClickOpen(ele.id);
                               }}

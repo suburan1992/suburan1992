@@ -76,7 +76,7 @@ export default function RdStatus() {
     const updateData = {
       doctorId: row.doctorid,
       currentAction: "onboarded",
-      nextAction: "final-onboarding",
+      nextAction: "Completed",
     };
     axios
       .put("http://localhost:8090/api/onboard/" + row.id, updateData)
@@ -125,7 +125,7 @@ export default function RdStatus() {
   const handleSubmitReject = () => {
     const obj = {
       currentAction: "hr-verification",
-      nextAction:"rd action",
+      nextAction: "rd action",
       remark: remark,
     };
     axios.put("http://localhost:8090/api/onboard/" + rid, obj).then((res) => {

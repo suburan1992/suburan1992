@@ -187,7 +187,7 @@ function DoctorForm({ history }) {
     opperunitcharge: "",
     netamount: "",
     opamount: "",
-    oprevenue: "",
+    oprevenue: "", 
     oppayout: "",
   };
   const [opservice, setOpservice] = useState({

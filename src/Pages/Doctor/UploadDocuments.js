@@ -723,10 +723,7 @@ function UploadDocuments({ history }) {
         k.forEach((element) => {
           l.push(element.docTitle);
         });
-        console.log(
-          l,
-          "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
-        );
+        
         setUploadData(l);
       });
   }, [refresh]);

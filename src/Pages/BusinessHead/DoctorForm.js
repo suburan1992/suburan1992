@@ -239,7 +239,15 @@ function DoctorForm({ history }) {
   const [adhoc, setAdhoc] = useState("");
   const [totalnetAmount, setTotalnetAmount] = useState([]);
   const [totalpayout, setTotalpayout] = useState([]);
+  const [totalippayout, setTotalIppayout] = useState([]);
+  const [totalipRevenue, setTotalIpRevenue] = useState([]);
+
   const [age, setAge] = React.useState("");
+  const [sfee, setSfee] = useState(0);
+  const [pap, setPap] = useState(0);
+  const [gross, setGross] = useState("");
+  const [netC, setNetC] = useState("");
+  const [finalpayout, setFinalpayout] = useState("");
 
   const handleChangeRoom = (event) => {
     setAge(event.target.value);
@@ -331,9 +339,9 @@ function DoctorForm({ history }) {
     const postData = {
       data: data,
       opservice: table,
-      ipservice: ipservice,
+      ipservice: iptable,
     };
-    // console.log(data, "&&12rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr343");
+    // console.log(postData, "&&12rrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr343");
     setBackDropOpen(true);
     await axios
       .post("http://localhost:8090/api/onboard", postData)
@@ -357,18 +365,8 @@ function DoctorForm({ history }) {
           toast.success("Successly Submitted!");
           window.location.reload();
         }, 1000);
-        // if (res.data != null) {
-        // history.push({
-        //   // pathname: "/Test",
-        //   state: { data: res.data.doctorData.id },
-        // });
-        // }
-      });
 
-    //   toast(z);
-    //   // setTimeout(() => {
-    //   //   window.location.reload()
-    //   // }, 3000);
+      });
   };
   const info = "Clearing Exceptions";
 
@@ -484,23 +482,90 @@ function DoctorForm({ history }) {
     setIpservice({ ...ipservice, [name]: value });
   };
 
+  const SHPC = () => {
+    var k = parseInt(ipservice.ipsurgeonfeeperc) / 100;
+    console.log(k, "//..");
+    var sf = k * 2000;
+    console.log(sf, "SF");
+    setSfee(sf);
+  };
+
+  const PAP = () => {
+    var i = parseInt(ipservice.ippackageamountperc) / 100;
+    console.log(i, "//..");
+    var pf = i * 5000;
+    console.log(pf, "PF");
+    setPap(pf);
+  };
+
+  const grossC = () => {
+    var g = 7000 * parseInt(ipservice.count);
+
+    // console.log(i, "AAAA");
+    console.log(g, "BBBB");
+    setGross(g);
+  };
+
+  const NetC = () => {
+    var i = parseInt(ipservice.amount);
+    var NB = gross - i;
+    console.log(i, NB, "BBBB");
+    setNetC(NB);
+  };
+
+  useEffect(() => {
+    var a = sfee === 0 ? 0 : sfee;
+    var b = pap === 0 ? 0 : pap;
+    var c = gross === 0 ? 0 : gross;
+    var p;
+
+    var s = parseInt(ipservice.ipfixedamount);
+    // console.log(s, "jhgfdasqwewret");
+    var k = parseInt(a + b + c);
+    var add;
+    if (s != "NaN") {
+      add = parseInt(k + s);
+    } else {
+      add = k;
+    }
+
+    setFinalpayout(add);
+  }, [sfee, pap, gross, ipservice.ipfixedamount]);
+
+  console.log(finalpayout, "finalllllllllllllllllllllllllllll");
+
   const addIpTableData = () => {
     ipservice.consultation = Package;
     ipservice.iproom = IpRoom;
     ipservice.ipmodeofpayment = IpMop;
+    ipservice.netperc = netC;
+    ipservice.ipgrossperc = gross;
+    ipservice.payout = finalpayout;
+    ipservice.revenue = gross;
 
     console.log(ipservice, "SUBRAT");
     setIptable((prevItems) => [...prevItems, ipservice]);
+    setTotalIppayout((i) => [...i, ipservice.payout]);
+    setTotalIpRevenue((i) => [...i, ipservice.revenue]);
     setIpservice(initialFormtStateipservice);
     setPackage("");
+    setNetC("");
+    setGross("");
     setIpRoom("");
     setIpMop("");
+    setFixedPay("");
+    setpayout("");
+    setAdhoc("");
+    setAmount("");
   };
   const RefreshIpRecord = () => {
     setIpservice(initialFormtStateipservice);
     setPackage("");
     setIpRoom("room");
     setIpMop("");
+    setGross("");
+    setFinalpayout("");
+    setNetC("");
   };
 
   console.log(iptable, "SUBRAT PARIDA");
@@ -585,14 +650,14 @@ function DoctorForm({ history }) {
   const deleteIptableRow = (row) => {
     var k = window.confirm("Are you sure want to delete this record ?");
     if (k) {
-      // const index = totalnetAmount.indexOf(row.netamount);
-      // if (index > -1) {
-      //   totalnetAmount.splice(index, 1);
-      // }
-      // const index1 = totalpayout.indexOf(row.oppayout);
-      // if (index > -1) {
-      //   totalpayout.splice(index, 1);
-      // }
+      const index = totalipRevenue.indexOf(row.revenue);
+      if (index > -1) {
+        totalipRevenue.splice(index, 1);
+      }
+      const index1 = totalippayout.indexOf(row.payout);
+      if (index > -1) {
+        totalippayout.splice(index, 1);
+      }
       var data = iptable.filter((z) => z.consultation != row.consultation);
       setIptable(data);
     }
@@ -2213,7 +2278,7 @@ function DoctorForm({ history }) {
                           </Grid>
 
                           <Grid container spacing={1}>
-                            <Grid item xs={3}>
+                            <Grid item xs={6}>
                               <div className="form-group">
                                 <select
                                   className="form-control"
@@ -2227,7 +2292,7 @@ function DoctorForm({ history }) {
                                 </select>
                               </div>
                             </Grid>
-                            <Grid item xs={3}>
+                            <Grid item xs={6}>
                               <div className="form-group">
                                 <select
                                   className="form-control"
@@ -2244,23 +2309,11 @@ function DoctorForm({ history }) {
                             <Grid item xs={3}>
                               <TextField
                                 variant="outlined"
-                                name="ipfixedamount"
-                                label="Fixed Amount"
-                                value={ipservice.ipfixedamount}
-                                onChange={handleIpserviceInputChange}
-                                // onBlur={fixedpayCalculation}
-                                size="small"
-                                fullWidth
-                              />
-                            </Grid>
-                            <Grid item xs={3}>
-                              <TextField
-                                variant="outlined"
                                 name="ipsurgeonfeeperc"
                                 label="Surgeon Fee Percentage"
                                 value={ipservice.ipsurgeonfeeperc}
                                 onChange={handleIpserviceInputChange}
-                                // onBlur={adhocCalculation}
+                                onBlur={SHPC}
                                 size="small"
                                 fullWidth
                               />
@@ -2272,42 +2325,42 @@ function DoctorForm({ history }) {
                                 label=" Package Amount Percentage"
                                 value={ipservice.ippackageamountperc}
                                 onChange={handleIpserviceInputChange}
+                                onBlur={PAP}
                                 size="small"
                                 fullWidth
                               />
                             </Grid>
-
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="count"
+                                label="Count"
+                                onBlur={grossC}
+                                // value={opservice.oppayout}
+                                value={ipservice.count}
+                                onChange={handleIpserviceInputChange}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
                             <Grid item xs={3}>
                               <TextField
                                 variant="outlined"
                                 name="ipgrossperc"
                                 label="Gross Percentage"
-                                value={ipservice.ipgrossperc}
+                                value={gross}
+                                // value={ipservice.ipgrossperc}
                                 onChange={handleIpserviceInputChange}
-                                // onBlur={payoutCalculation}
                                 size="small"
                                 fullWidth
                               />
                             </Grid>
-
-                            <Grid item xs={3}>
-                              <TextField
-                                variant="outlined"
-                                name="netperc"
-                                label="Net Percentage"
-                                value={ipservice.netperc}
-                                onChange={handleIpserviceInputChange}
-                                // onBlur={fixedpayCalculation}
-                                size="small"
-                                fullWidth
-                              />
-                            </Grid>
-
                             <Grid item xs={3}>
                               <TextField
                                 variant="outlined"
                                 name="amount"
-                                label="Amount"
+                                label="Adhoc Deduction"
+                                onBlur={NetC}
                                 // value={opservice.oppayout}
                                 value={ipservice.amount}
                                 onChange={handleIpserviceInputChange}
@@ -2318,15 +2371,29 @@ function DoctorForm({ history }) {
                             <Grid item xs={3}>
                               <TextField
                                 variant="outlined"
-                                name="count"
-                                label="Count"
-                                // value={opservice.oppayout}
-                                value={ipservice.count}
+                                name="netperc"
+                                label="Net Percentage"
+                                value={netC}
                                 onChange={handleIpserviceInputChange}
+                                // onBlur={fixedpayCalculation}
                                 size="small"
                                 fullWidth
                               />
                             </Grid>
+
+                            <Grid item xs={3}>
+                              <TextField
+                                variant="outlined"
+                                name="ipfixedamount"
+                                label="Fixed Amount"
+                                value={ipservice.ipfixedamount}
+                                onChange={handleIpserviceInputChange}
+                                // onBlur={fixedpayCalculation}
+                                size="small"
+                                fullWidth
+                              />
+                            </Grid>
+
                             <Grid item xs={3}>
                               <TextField
                                 variant="outlined"
@@ -2344,8 +2411,8 @@ function DoctorForm({ history }) {
                                 variant="outlined"
                                 name="payout"
                                 label="Payout"
-                                // value={opservice.oppayout}
-                                value={ipservice.payout}
+                                value={finalpayout}
+                                // value={ipservice.payout}
                                 onChange={handleIpserviceInputChange}
                                 size="small"
                                 fullWidth
@@ -2435,7 +2502,6 @@ function DoctorForm({ history }) {
                                     ]}
                                     data={iptable}
                                     options={{
-                                      // filtering: true,
                                       sorting: true,
                                       exportButton: true,
                                       pageSize: 5,
@@ -2452,296 +2518,37 @@ function DoctorForm({ history }) {
                               )}
                             </Grid>
                           </Grid>
-
-                          {/* <Table
-                                bordered
-                                striped
-                                hover
-                                responsive="xl"
-                                id="test"
-                              >
-                                <thead>
-                                  <tr style={{ textAlign: "center" }}>
-                                    <th colspan="4" className="col-6">
-                                      Fixed
-                                    </th>
-                                    <th colspan="5" className="col-6">
-                                      Percentage
-                                    </th>
-                                    <th rowSpan="2" className="col-1">
-                                      Count
-                                    </th>
-                                    <th rowSpan="2" className="col-1">
-                                      Revenue
-                                    </th>
-                                    <th rowSpan="2" className="col-1">
-                                      Payout
-                                    </th>
-                                  </tr>
-                                  <tr style={{ textAlign: "center" }}>
-                                    <th
-                                      style={{ fontSize: "12px" }}
-                                      className="col-4"
-                                    >
-                                      Type
-                                    </th>
-                                    <th
-                                      style={{ fontSize: "12px" }}
-                                      className="col-3"
-                                    >
-                                      Room
-                                    </th>
-                                    <th style={{ fontSize: "12px" }}>
-                                      Mode of payment
-                                    </th>
-                                    <th style={{ fontSize: "12px" }}>Amount</th>
-                                    <th style={{ fontSize: "12px" }}>
-                                      Surgeon Fee
-                                    </th>
-                                    <th style={{ fontSize: "12px" }}>
-                                      Package amount
-                                    </th>
-                                    <th style={{ fontSize: "12px" }}>
-                                      Gross bill amount
-                                    </th>
-                                    <th style={{ fontSize: "12px" }}>
-                                      Net Bill Amount
-                                    </th>
-                                    <th style={{ fontSize: "12px" }}>Amount</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  <tr>
-                                    <td>
-                                      <Autocomplete
-                                        id="combo-box-demo"
-                                        options={procedure}
-                                        getOptionLabel={(option) => option.name}
-                                        style={{ width: 300 }}
-                                        renderInput={(params) => (
-                                          <TextField
-                                            {...params}
-                                            label="Enter Procedure"
-                                            variant="outlined"
-                                          />
-                                        )}
-                                      />
-                                     
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipfixedroom"
-                                        name="ipfixedroom"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipfixedmodeofpay"
-                                        name="ipfixedmodeofpay"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipfixedamount"
-                                        name="ipfixedamount"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipsurgeonfee"
-                                        name="ipsurgeonfee"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ippackageamount"
-                                        name="ippackageamount"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipgrossbillamount"
-                                        name="ipgrossbillamount"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipnetbillamount"
-                                        name="ipnetbillamount"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ippercamount"
-                                        name="ippercamount"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipcount"
-                                        name="ipcount"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="iprevenue"
-                                        name="iprevenue"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ippayout"
-                                        name="ippayout"
-                                        onChange={selectedIPValue(0)}
-                                      />
-                                    </td>
-                                  </tr>
-                                  <tr>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="iptype"
-                                        name="iptype"
-                                        placeholder="Consultation"
-                                        class="optype"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipfixedroom"
-                                        name="ipfixedroom"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipfixedmodeofpay"
-                                        name="ipfixedmodeofpay"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipfixedamount"
-                                        name="ipfixedamount"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipsurgeonfee"
-                                        name="ipsurgeonfee"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ippackageamount"
-                                        name="ippackageamount"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipgrossbillamount"
-                                        name="ipgrossbillamount"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipnetbillamount"
-                                        name="ipnetbillamount"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ippercamount"
-                                        name="ippercamount"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ipcount"
-                                        name="ipcount"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="iprevenue"
-                                        name="iprevenue"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                    <td>
-                                      <input
-                                        className="form-control form-doctor"
-                                        type="text"
-                                        id="ippayout"
-                                        name="ippayout"
-                                        onChange={selectedIPValue(1)}
-                                      />
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </Table> */}
+                          {totalippayout && totalippayout.length > 0 ? (
+                            <Grid
+                              xs={12}
+                              style={{
+                                float: "right",
+                                marginTop: "20px",
+                                color: "black",
+                              }}
+                            >
+                              Total Payout:{" "}
+                              {totalippayout.reduce((a, b) => a + b)}
+                            </Grid>
+                          ) : (
+                            ""
+                          )}
+                          {totalipRevenue && totalipRevenue.length > 0 ? (
+                            <Grid
+                              xs={12}
+                              style={{
+                                float: "right",
+                                marginTop: "20px",
+                                color: "black",
+                                marginRight: "20px",
+                              }}
+                            >
+                              Total Revenue:{" "}
+                              {totalipRevenue.reduce((a, b) => a + b)}
+                            </Grid>
+                          ) : (
+                            ""
+                          )}
                         </TabPanel>
                       </div>
                     </Col>
